@@ -32,9 +32,9 @@ import java.util.Optional;
 public class CodeGenerator {
 
     // 数据库连接配置
-    private static final String JDBC_URL = "jdbc:postgresql://xxxx:5432/jdd2db?currentSchema=jdd2db";
-    private static final String JDBC_USER_NAME = "xxxx";
-    private static final String JDBC_PASSOWRD = "xxxx";
+    private static final String JDBC_URL = "jdbc:postgresql://xxx:5432/jdd2db?currentSchema=jdd2db";
+    private static final String JDBC_USER_NAME = "xxx";
+    private static final String JDBC_PASSOWRD = "xxx";
 
     // 生成代码入口main方法
     public static void main(String[] args) {
@@ -135,7 +135,7 @@ public class CodeGenerator {
                     .columnNaming(NamingStrategy.underline_to_camel).idType(IdType.AUTO)
                     //开启生成实体时生成字段注解
                     .enableTableFieldAnnotation()
-                    .formatFileName("%sDO")
+                    .formatFileName(scanner.apply("实体来是否需要DO结尾？").equals("是") ? "%sDO" : "")
                     //.convertFileName(fromFileName -> fromFileName + "DO")
                     //添加表字段填充，"create_time"字段自动填充为插入时间，"modify_time"字段自动填充为插入修改时间
                     .addTableFills(

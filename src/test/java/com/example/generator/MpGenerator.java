@@ -31,9 +31,9 @@ public class MpGenerator {
         tables.add("jdd_user_config");
         String path = System.getProperty("user.dir");
         String finalPath = "D:\\jjjj";
-        FastAutoGenerator.create("jdbc:postgresql://xxxx:5432/jdd2db?currentSchema=jdd2db",
-                        "xxxx",
-                        "xxxx")
+        FastAutoGenerator.create("jdbc:postgresql://xxx:5432/jdd2db?currentSchema=jdd2db",
+                        "xxx",
+                        "xxx")
                 .globalConfig((scanner, builder) -> {
                     //作者名
                     builder.author(scanner.apply("请输入作者名称？"))
