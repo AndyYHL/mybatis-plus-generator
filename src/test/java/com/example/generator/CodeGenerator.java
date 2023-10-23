@@ -32,9 +32,9 @@ import java.util.Optional;
 public class CodeGenerator {
 
     // 数据库连接配置
-    private static final String JDBC_URL = "jdbc:postgresql://xxx:5432/jdd2db?currentSchema=jdd2db";
-    private static final String JDBC_USER_NAME = "xxx";
-    private static final String JDBC_PASSOWRD = "xxx";
+    private static final String JDBC_URL = "jdbc:postgresql://xxxx:5432/jdd2db?currentSchema=jdd2db";
+    private static final String JDBC_USER_NAME = "xxxx";
+    private static final String JDBC_PASSOWRD = "xxxx";
 
     // 生成代码入口main方法
     public static void main(String[] args) {
@@ -135,7 +135,7 @@ public class CodeGenerator {
                     .columnNaming(NamingStrategy.underline_to_camel).idType(IdType.AUTO)
                     //开启生成实体时生成字段注解
                     .enableTableFieldAnnotation()
-                    .formatFileName(scanner.apply("实体来是否需要DO结尾？").equals("是") ? "%sDO" : "")
+                    .formatFileName(scanner.apply("实体来是否需要DO结尾？").equals("是") ? "%sDO" : "%s")
                     //.convertFileName(fromFileName -> fromFileName + "DO")
                     //添加表字段填充，"create_time"字段自动填充为插入时间，"modify_time"字段自动填充为插入修改时间
                     .addTableFills(
@@ -195,9 +195,9 @@ public class CodeGenerator {
         fastAutoGenerator.injectionConfig((scanner, consumer) -> {
             String hasGenerate = scanner.apply("是否生成DO/DTO/VO");
             if (hasGenerate.equals("是")) {
-                consumer.customFile(new CustomFile.Builder().fileName("DO.java").templatePath("/templates/entityDO.java.ftl").packageName("pojo.do").enableFileOverride().build())
-                        .customFile(new CustomFile.Builder().fileName("DTO.java").templatePath("/templates/entityDTO.java.ftl").packageName("pojo.dto").enableFileOverride().build())
-                        .customFile(new CustomFile.Builder().fileName("VO.java").templatePath("/templates/entityVO.java.ftl").packageName("pojo.vo").enableFileOverride().build())
+                consumer.customFile(new CustomFile.Builder().fileName("DO.java").templatePath("/templates/entityDO.java").packageName("pojo.domain").enableFileOverride().build())
+                        .customFile(new CustomFile.Builder().fileName("DTO.java").templatePath("/templates/entityDTO.java").packageName("pojo.dto").enableFileOverride().build())
+                        .customFile(new CustomFile.Builder().fileName("VO.java").templatePath("/templates/entityVO.java").packageName("pojo.vo").enableFileOverride().build())
                         .build();
             }
         });
