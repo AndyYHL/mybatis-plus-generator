@@ -20,13 +20,13 @@
         <commons.lang4.version>4.4</commons.lang4.version>
         <commons.lang3.version>3.12.0</commons.lang3.version>
         <hutools.version>5.8.18</hutools.version>
-        <springdoc.version>2.2.0</springdoc.version>
         <fastjson.version>2.0.41</fastjson.version>
         <validation-api.version>3.0.2</validation-api.version>
         <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
         <freemarker.version>2.3.32</freemarker.version>
         <velocity-engine-core.version>2.3</velocity-engine-core.version>
         <mybatis-plus.version>3.5.3.2</mybatis-plus.version>
+        <springdoc.version>2.2.0</springdoc.version>
         <knife4j.version>4.3.0</knife4j.version>
     </properties>
     <dependencies>
@@ -92,12 +92,6 @@
             <artifactId>hutool-all</artifactId>
             <version>${hutools.version}</version>
         </dependency>
-        <!--放行接口:"/v3/api-docs/**", "/swagger-ui/**"-->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>${springdoc.version}</version>
-        </dependency>
         <dependency>
             <groupId>com.alibaba.fastjson2</groupId>
             <artifactId>fastjson2</artifactId>
@@ -139,6 +133,12 @@
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-generator</artifactId>
             <version>${mybatis-plus.version}</version>
+        </dependency>
+        <!--放行接口:"/v3/api-docs/**", "/swagger-ui/**"-->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version>
         </dependency>
         <!--放行接口:"/doc.html", "/webjars/**"-->
         <dependency>

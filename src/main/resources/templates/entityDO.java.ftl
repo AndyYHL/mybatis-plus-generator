@@ -10,7 +10,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 </#if>
 <#if entityLombokModel>
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
     <#if chainModel>
 import lombok.experimental.Accessors;
     </#if>
@@ -25,7 +26,8 @@ import lombok.experimental.Accessors;
  * @since ${date}
  */
 <#if entityLombokModel>
-@Data
+@Getter
+@Setter
     <#if chainModel>
 @Accessors(chain = true)
     </#if>
@@ -34,9 +36,9 @@ import lombok.experimental.Accessors;
 @TableName("${schemaName}${table.name}")
 </#if>
 <#if superEntityClass??>
-public class ${entity}DO extends ${superEntityClass}<#if activeRecord><${entity}></#if> {
+public class ${entity}DO extends ${superEntityClass}<#if activeRecord><${entity}DO></#if> {
 <#elseif activeRecord>
-public class ${entity}DO extends Model<${entity}> {
+public class ${entity}DO extends Model<${entity}DO> {
 <#elseif entitySerialVersionUID>
 public class ${entity}DO implements Serializable {
 <#else>
@@ -51,7 +53,6 @@ public class ${entity}DO {
     <#if field.keyFlag>
         <#assign keyPropertyName="${field.propertyName}"/>
     </#if>
-
     <#if field.comment!?length gt 0>
     /**
      * ${field.comment}
@@ -70,12 +71,8 @@ public class ${entity}DO {
     <#elseif field.fill??>
     <#-- -----   存在字段填充设置   ----->
         <#if field.convert>
-    @TableField(value = "${field.annotationColumnName}", fill = FieldFill.${field.fill})
-        <#else>
     @TableField(fill = FieldFill.${field.fill})
         </#if>
-    <#elseif field.convert>
-    @TableField("${field.annotationColumnName}")
     </#if>
     <#-- 乐观锁注解 -->
     <#if field.versionField>
@@ -101,7 +98,7 @@ public class ${entity}DO {
     }
 
     <#if chainModel>
-    public ${entity} set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
+    public ${entity}DO set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
     <#else>
     public void set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
     </#if>

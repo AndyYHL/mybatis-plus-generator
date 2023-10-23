@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 import com.baomidou.mybatisplus.generator.fill.Column;
+import com.example.generator.pojo.domain.BaseEntity;
 import com.google.common.collect.Maps;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -30,8 +31,8 @@ public class MpGenerator {
         tables.add("jdd_user_config");
         String path = System.getProperty("user.dir");
         String finalPath = "D:\\jjjj";
-        FastAutoGenerator.create("jdbc:postgresql://xxxxxx:5432/jdd2db?currentSchema=jdd2db",
-                        "xxxxx",
+        FastAutoGenerator.create("jdbc:postgresql://xxxx:5432/jdd2db?currentSchema=jdd2db",
+                        "xxxx",
                         "xxxx")
                 .globalConfig((scanner, builder) -> {
                     //作者名
@@ -91,7 +92,7 @@ public class MpGenerator {
                             .entityBuilder()
                             .enableLombok()
                             // 继承的类
-                            //.superClass(BaseEntity.class)
+                            .superClass(BaseEntity.class)
                             //不实现 Serializable 接口，不生产 SerialVersionUID
                             .disableSerialVersionUID()
                             // 乐观锁实体类名称
@@ -102,7 +103,8 @@ public class MpGenerator {
                             //数据库表字段映射到实体的命名策略：下划线转驼峰命
                             .columnNaming(NamingStrategy.underline_to_camel)
                             .logicDeleteColumnName("deleted")
-                            //.formatFileName("%sDO")
+                            .convertFileName(fromFileName -> fromFileName + "DO")
+
                             .addTableFills(
                                     new Column("create_time", FieldFill.INSERT),
                                     new Column("update_time", FieldFill.INSERT_UPDATE)

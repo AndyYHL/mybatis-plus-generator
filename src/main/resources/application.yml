@@ -7,9 +7,9 @@ spring:
   main:
     allow-bean-definition-overriding: true
   datasource:
-    url: jdbc:postgresql://xxxx:5432/jdd2db?currentSchema=jdd2db
-    username: xxx
-    password: xxxx
+    url: jdbc:postgresql://172.22.11.250:5432/jdd2db?currentSchema=jdd2db
+    username: jdd2db
+    password: 123456
     hikari:
       pool-name: DATA-ACCUMULATION-CP
       minimum-idle: 5
