@@ -1,5 +1,6 @@
 package com.example.generator.config;
 
+import com.example.generator.pojo.constant.base.ApiConstant;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -37,21 +38,21 @@ public class OpenApiConfig {
     @Bean
     public GroupedOpenApi systemApi() {
         return GroupedOpenApi.builder().group("系统接口")
-                .pathsToMatch("/api/**")
+                .pathsToMatch(ApiConstant.API_PREFIX.concat("**"))
                 .build();
     }
 
     @Bean
     public GroupedOpenApi operationApi() {
         return GroupedOpenApi.builder().group("运营接口请求")
-                .pathsToMatch("/api/operation/**")
+                .pathsToMatch(ApiConstant.API_OPERATION_PREFIX.concat("**"))
                 .build();
     }
 
     @Bean
     public GroupedOpenApi platformApi() {
         return GroupedOpenApi.builder().group("平台请求地址")
-                .pathsToMatch("/api/platform/**")
+                .pathsToMatch(ApiConstant.API_PLATFORM_PREFIX.concat("**"))
                 .build();
     }
 }

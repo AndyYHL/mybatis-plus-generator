@@ -15,7 +15,6 @@ public class ApiConstant {
      * 运营接口请求
      */
     public static final String API_OPERATION_PREFIX = "/api/operation/";
-
     /**
      * 平台请求地址
      */
