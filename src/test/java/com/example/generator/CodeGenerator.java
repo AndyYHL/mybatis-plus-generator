@@ -32,9 +32,9 @@ import java.util.Optional;
 public class CodeGenerator {
 
     // 数据库连接配置
-    private static final String JDBC_URL = "jdbc:postgresql://xxxx:5432/jdd2db?currentSchema=jdd2db";
-    private static final String JDBC_USER_NAME = "xxxx";
-    private static final String JDBC_PASSOWRD = "xxxx";
+    private static final String JDBC_URL = "jdbc:postgresql://xxx:5432/jdd2db?currentSchema=jdd2db";
+    private static final String JDBC_USER_NAME = "xxx";
+    private static final String JDBC_PASSOWRD = "xxx";
 
     // 生成代码入口main方法
     public static void main(String[] args) {
@@ -101,7 +101,6 @@ public class CodeGenerator {
         // 使用Freemarker引擎模板，默认的是Velocity引擎模板
         AbstractTemplateEngine templateEngine = new FreemarkerTemplateEngine();
         fastAutoGenerator.templateEngine(templateEngine);
-
         // 5.注入配置 TODO
 
         // 6.策略配置
@@ -114,7 +113,23 @@ public class CodeGenerator {
                     .addInclude(getTables(scanner.apply("请输入要生成的表名，多个英文逗号分隔？所有输入 all")))
                     .addTablePrefix(scanner.apply("请设置过滤表前缀？"));
         });
+        System.out.println("start 生成基础配置");
+        // 生成基础配置
+        basics(fastAutoGenerator);
+        System.out.println("end 生成基础配置");
 
+        System.out.println("start 生成扩展配置");
+        // 生成扩展配置
+        extend(fastAutoGenerator);
+        System.out.println("end 生成扩展配置");
+    }
+
+    /**
+     * 生成基础配置
+     *
+     * @param fastAutoGenerator
+     */
+    protected static void basics(FastAutoGenerator fastAutoGenerator) {
         // 6.1.Entity策略配置
         // 生成实体时生成字段的注解，包括@TableId注解等
         // 数据库表和字段映射到实体的命名策略，为下划线转驼峰
@@ -135,7 +150,7 @@ public class CodeGenerator {
                     .columnNaming(NamingStrategy.underline_to_camel).idType(IdType.AUTO)
                     //开启生成实体时生成字段注解
                     .enableTableFieldAnnotation()
-                    .formatFileName(scanner.apply("实体来是否需要DO结尾？").equals("是") ? "%sDO" : "%s")
+                    .formatFileName("%sDO")
                     //.convertFileName(fromFileName -> fromFileName + "DO")
                     //添加表字段填充，"create_time"字段自动填充为插入时间，"modify_time"字段自动填充为插入修改时间
                     .addTableFills(
@@ -147,11 +162,13 @@ public class CodeGenerator {
         // 6.2.Controller策略配置
         // 开启生成@RestController控制器
         fastAutoGenerator.strategyConfig(strategyConfigBuilder ->
-                strategyConfigBuilder.controllerBuilder()
-                        // 映射路径使用连字符格式，而不是驼峰
-                        .enableRestStyle()
-                        .formatFileName("%sController")
-                        .enableFileOverride());
+                        strategyConfigBuilder.controllerBuilder()
+                                // 映射路径使用连字符格式，而不是驼峰
+                                .enableRestStyle()
+                                .formatFileName("%sController")
+                // 禁止覆盖
+                //.enableFileOverride()
+        );
 
         // 6.3.Service策略配置
         // 格式化service接口和实现类的文件名称，去掉默认的ServiceName前面的I
@@ -162,7 +179,9 @@ public class CodeGenerator {
                         .formatServiceFileName("I%sService")
                         .superServiceImplClass(ServiceImpl.class)
                         .formatServiceImplFileName("%sService")
-                        .enableFileOverride());
+                // 禁止覆盖
+                //.enableFileOverride()
+        );
 
         // 6.4.Mapper策略配置
         // 格式化 mapper文件名,格式化xml实现类文件名称
@@ -173,7 +192,9 @@ public class CodeGenerator {
                         .enableBaseResultMap()
                         .formatMapperFileName("%sMapper")
                         .formatXmlFileName("%sMapper")
-                        .enableFileOverride());
+                // 禁止覆盖
+                //.enableFileOverride()
+        );
         // 6.5 模板配置
         fastAutoGenerator.templateConfig(templateConfigBuilder -> {
             //实体类使用我们自定义模板- 禁用模板
@@ -191,13 +212,52 @@ public class CodeGenerator {
             //设置 controller 模板路径
             templateConfigBuilder.controller("/templates/controller.java");
         });
+        // 7.生成代码
+        fastAutoGenerator.execute();
+    }
+
+    /**
+     * 生成扩展配置
+     *
+     * @param fastAutoGenerator
+     */
+    protected static void extend(FastAutoGenerator fastAutoGenerator) {
+        // 6.1.Entity策略配置
+        // 生成实体时生成字段的注解，包括@TableId注解等
+        // 数据库表和字段映射到实体的命名策略，为下划线转驼峰
+        // 全局主键类型为None
+        // 实体名称格式化为XXXEntity
+        fastAutoGenerator.strategyConfig((scanner, strategyConfigBuilder) -> {
+            strategyConfigBuilder.entityBuilder().enableLombok()
+                    // 继承的类
+                    .superClass(BaseEntity.class)
+                    //不实现 Serializable 接口，不生产 SerialVersionUID
+                    .disableSerialVersionUID()
+                    // 乐观锁实体类名称
+                    .versionPropertyName(Optional.ofNullable(scanner.apply("请输入字段中的乐观锁名称？")).filter(StringUtils::isNotBlank).orElse("version"))
+                    .logicDeletePropertyName(Optional.ofNullable(scanner.apply("请输入数据库中的逻辑删除字段入实体名称")).filter(StringUtils::isNotBlank).orElse("deleted"))
+                    //数据库表映射到实体的命名策略：下划线转驼峰命
+                    .naming(NamingStrategy.underline_to_camel)
+                    //数据库表字段映射到实体的命名策略：下划线转驼峰命hh
+                    .columnNaming(NamingStrategy.underline_to_camel).idType(IdType.AUTO)
+                    //开启生成实体时生成字段注解
+                    .enableTableFieldAnnotation()
+                    .formatFileName("%s")
+                    //.convertFileName(fromFileName -> fromFileName + "DO")
+                    //添加表字段填充，"create_time"字段自动填充为插入时间，"modify_time"字段自动填充为插入修改时间
+                    .addTableFills(
+                            new Column("create_time", FieldFill.INSERT),
+                            new Column("update_time", FieldFill.INSERT_UPDATE)
+                    ).enableFileOverride();
+        });
+
         // 6.6 扩展类型生成
         fastAutoGenerator.injectionConfig((scanner, consumer) -> {
             String hasGenerate = scanner.apply("是否生成DO/DTO/VO");
             if (hasGenerate.equals("是")) {
-                consumer.customFile(new CustomFile.Builder().fileName("DO.java").templatePath("/templates/entityDO.java").packageName("pojo.domain").enableFileOverride().build())
-                        .customFile(new CustomFile.Builder().fileName("DTO.java").templatePath("/templates/entityDTO.java").packageName("pojo.dto").enableFileOverride().build())
-                        .customFile(new CustomFile.Builder().fileName("VO.java").templatePath("/templates/entityVO.java").packageName("pojo.vo").enableFileOverride().build())
+                consumer.customFile(new CustomFile.Builder().fileName("DO.java").templatePath("/templates/entityDO.java.ftl").packageName("pojo.domain").enableFileOverride().build())
+                        .customFile(new CustomFile.Builder().fileName("DTO.java").templatePath("/templates/entityDTO.java.ftl").packageName("pojo.dto").enableFileOverride().build())
+                        .customFile(new CustomFile.Builder().fileName("VO.java").templatePath("/templates/entityVO.java.ftl").packageName("pojo.vo").enableFileOverride().build())
                         .build();
             }
         });

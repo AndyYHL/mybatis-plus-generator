@@ -51,4 +51,11 @@ mybatisPlus:
   configuration:
       use-actual-param-name: true
       log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#日志
+logging:
+  level:
+    info-level: trace
+    root: trace
+    sql: trace
+    server: trace
 
