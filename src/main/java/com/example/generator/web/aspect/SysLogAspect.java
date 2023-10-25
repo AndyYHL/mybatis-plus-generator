@@ -76,7 +76,8 @@ public class SysLogAspect {
             result = pjd.proceed();
             //返回通知
             clock.stop();
-        } catch (Throwable e) {//异常通知
+        } catch (Throwable e) {
+            //异常通知
             e.printStackTrace();
         }        //后置通知
         if (!methodName.equalsIgnoreCase("initBinder")) {
