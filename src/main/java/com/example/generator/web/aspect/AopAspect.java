@@ -2,13 +2,17 @@ package com.example.generator.web.aspect;
 
 import com.alibaba.fastjson2.JSON;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.util.Objects;
 
 /**
  * AopAspect描述
@@ -32,6 +36,7 @@ public class AopAspect {
     public void pointCutApi2() {
         log.info("@Pointcut：pointCutApi2定义一个切面，所关注的某件事入口");
     }
+
     /**
      * @Before：在之前做什么，指定的方法在切面切入目标方法之前执行 pointcut()：定义切面入口方法
      */
@@ -83,17 +88,29 @@ public class AopAspect {
             // 计时开始
             clock.start();
             //前置通知
-            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-            String uri = request.getRequestURI();//获取请求路径
-            log.info("url:【{}】,req:【{}】", uri, JSON.toJSONString(pjd.getArgs()));
+            HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+            //获取请求路径
+            String uri = request.getRequestURI();
+            String contentType = request.getContentType();
+            Object[] objects = pjd.getArgs();
+            for (Object o : objects) {
+                if (o instanceof HttpServletRequest || o instanceof HttpServletResponse) {
+                    log.info("url:【{}】,req:【{JAVA系统对象}】", uri);
+                } else if (StringUtils.isNotBlank(contentType) && contentType.contains("application/json")) {
+                    log.info("url:【{}】,req:【{}】", uri, JSON.toJSONString(pjd.getArgs()));
+                } else {
+                    log.info("url:【{}】,req:【{}】", uri, pjd.getArgs());
+                }
+            }
             // 执行目标方法
             result = pjd.proceed();
             //返回通知
             clock.stop();
         } catch (Throwable e) {
             //异常通知
-            e.printStackTrace();
-        }        //后置通知
+            log.error(JSON.toJSONString(e.getStackTrace()));
+        }
+        //后置通知
         if (!methodName.equalsIgnoreCase("initBinder")) {
             long constTime = clock.getTime();
             log.info("[" + className + "]" + "-" + "[" + methodName + "]" + " 花费时间：" + constTime + "ms");
