@@ -28,6 +28,7 @@
         <mybatis-plus.version>3.5.4</mybatis-plus.version>
         <springdoc.version>2.2.0</springdoc.version>
         <knife4j.version>4.3.0</knife4j.version>
+        <mybatis-typehandlers.version>1.0.2</mybatis-typehandlers.version>
     </properties>
     <dependencies>
         <dependency>
@@ -150,6 +151,15 @@
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
             <version>${knife4j.version}</version>
+        </dependency>
+        <!-- mybatis-JSR310标准类型（即java8新加的日期类型）转换，防止LocalDateTime等转换失败。
+    高版本的mybatis里也带了对应的转换类，但没有具体实现，而是把实现交给了第三方的JDBC连接池。
+    springboot默认自带的HikariPool连接池没有很好的实现，所以会报错，只能把该依赖包加在mybatis相关依赖之前，
+    这样就可以把mybatis中的转换累给替换掉 -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-typehandlers-jsr310</artifactId>
+            <version>${mybatis-typehandlers.version}</version>
         </dependency>
     </dependencies>
 
