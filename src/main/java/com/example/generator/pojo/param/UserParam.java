@@ -16,7 +16,7 @@ public class UserParam {
     /**
      * 用户ID
      */
-    @Schema(name = "userId", description = "用户ID")
+    @Schema(name = "userId", description = "用户ID", requiredMode = Schema.RequiredMode.REQUIRED)
     private String userId;
     /**
      * 用户名
