@@ -64,11 +64,11 @@ public class ApiResponse<T> extends ApiResponseCommon {
     /**
      * 有追踪号
      */
-    public static <T> ApiResponse<T> success(String trace) {
+    public static <T> ApiResponse<T> successTrace(String trace) {
         return new ApiResponse<T>(trace, BasicRespCode.SUCCESS.getCode(), BasicRespCode.SUCCESS.getDesc(), null);
     }
 
-    public static <T> ApiResponse<T> success(String trace, T data) {
+    public static <T> ApiResponse<T> successTrace(String trace, T data) {
         return new ApiResponse<T>(trace, BasicRespCode.SUCCESS.getCode(), BasicRespCode.SUCCESS.getDesc(), data);
     }
 
