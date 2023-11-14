@@ -24,11 +24,11 @@ public enum AuthorityEnum {
      */
     READABLE(0B100, "可读"),
     /**
-     * 读权限 0B010 = 2
+     * 写权限 0B010 = 2
      */
     WRITABLE(0B010, "可写"),
     /**
-     * 读权限 0B001 = 1
+     * 可运行 0B001 = 1
      */
     RUNNABLE(0B001, "可运行");
 
