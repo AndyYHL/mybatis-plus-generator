@@ -20,9 +20,13 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum AuthorityEnum {
     /**
-     * 读权限 0B100 = 4
+     * 读权限 100 = 4
      */
     READABLE(0B100, "可读"),
+    /**
+     * 读写权限 0B011 = 8
+     */
+    READABLE_WRITABLE(0B1000, "读写权限"),
     /**
      * 写权限 0B010 = 2
      */

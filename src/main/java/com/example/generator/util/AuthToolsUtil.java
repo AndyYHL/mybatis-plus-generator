@@ -57,7 +57,7 @@ public class AuthToolsUtil {
         // 比如 user:0B101 operation:0B100 就可以
         // 比如 user:0B001 operation:0B100 不可以 user用户本身就没有读权限
         // 细粒度分析：只要对应位置的二进制都是1就为true,否则为false
-        if (this.judgeOperation(user.getAuth(), operation)) {
+        if (Boolean.TRUE.equals(this.judgeOperation(user.getAuth(), operation))) {
             System.out.println(user.getUserName() + "进行" + operation.getName() + "操作成功");
         } else {
             System.out.println(user.getUserName() + "进行" + operation.getName() + "操作失败");
