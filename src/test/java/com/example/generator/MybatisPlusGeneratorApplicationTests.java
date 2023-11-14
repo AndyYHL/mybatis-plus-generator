@@ -31,13 +31,12 @@ class MybatisPlusGeneratorApplicationTests {
         var jjj = "asdsfadsfddd";
         System.out.println(jjj.charAt(3));
 
-        double bit = Math.pow(2, 3);
-        DoubleBinary db = new DoubleBinary(3.14);
-        // String byes = Double.doubleToLongBits(bit);
-        System.out.println("十进制转二进制:"+Double.doubleToLongBits(bit));
+        int bit = 8;
+        String byes = Integer.toBinaryString(bit);
+        System.out.println("十进制转二进制:" + byes);
 
-        //Integer it = Integer.valueOf(bit, 2);
-        //System.out.println("转换为10进制结果:"+it);
+        Integer it = Integer.valueOf(byes, 2);
+        System.out.println("转换为10进制结果:" + it);
     }
 
     UserDO user1 = UserDO.builder().userId("用户一").userName("用户一").auth(0B000).build();
@@ -70,13 +69,13 @@ class MybatisPlusGeneratorApplicationTests {
     @Test
     public void delUser1Write() {
         // 先给予全部权限
-        authTools.addUserAuth(user1, AuthorityEnum.READABLE, AuthorityEnum.WRITABLE, AuthorityEnum.RUNNABLE,AuthorityEnum.READABLE_WRITABLE);
+        authTools.addUserAuth(user1, AuthorityEnum.READABLE, AuthorityEnum.WRITABLE, AuthorityEnum.RUNNABLE, AuthorityEnum.READABLE_WRITABLE);
         System.out.println("user1：" + user1);
         authTools.delUserAuth(user1, AuthorityEnum.RUNNABLE);
         System.out.println("删除可运行权限后user1：" + user1);
-        authTools.execOpera(user1,AuthorityEnum.RUNNABLE);
-        authTools.execOpera(user1,AuthorityEnum.READABLE);
-        authTools.execOpera(user1,AuthorityEnum.READABLE_WRITABLE);
+        authTools.execOpera(user1, AuthorityEnum.RUNNABLE);
+        authTools.execOpera(user1, AuthorityEnum.READABLE);
+        authTools.execOpera(user1, AuthorityEnum.READABLE_WRITABLE);
     }
 
     /**
@@ -85,8 +84,8 @@ class MybatisPlusGeneratorApplicationTests {
     @Test
     public void execFileByUser() {
         authTools.addUserAuth(user1, AuthorityEnum.READABLE);
-        System.out.println("user1："+user1);
-        System.out.println("user2："+user2);
+        System.out.println("user1：" + user1);
+        System.out.println("user2：" + user2);
         authTools.execOpera(user1, AuthorityEnum.READABLE);
         authTools.execOpera(user1, AuthorityEnum.RUNNABLE);
         authTools.execOpera(user2, AuthorityEnum.READABLE);
