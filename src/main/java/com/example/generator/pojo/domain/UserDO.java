@@ -1,5 +1,6 @@
 package com.example.generator.pojo.domain;
 
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -9,6 +10,7 @@ import lombok.Data;
  * @date 2023-10-20
  **/
 @Data
+@Builder
 public class UserDO {
     /**
      * 用户ID
@@ -18,4 +20,8 @@ public class UserDO {
      * 用户名称
      */
     private String userName;
+    /**
+     * 默认权限全空
+     */
+    private Integer auth = 0B000;
 }
