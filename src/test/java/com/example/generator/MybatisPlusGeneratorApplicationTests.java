@@ -31,7 +31,7 @@ class MybatisPlusGeneratorApplicationTests {
         var jjj = "asdsfadsfddd";
         System.out.println(jjj.charAt(3));
 
-        int bit = 8;
+        int bit = (int) Math.pow(2, 4);
         String byes = Integer.toBinaryString(bit);
         System.out.println("十进制转二进制:" + byes);
 
