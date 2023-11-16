@@ -33,7 +33,7 @@ import java.util.Optional;
  * @author Administrator-YHL
  * @date 2023-10-23
  **/
-public class CodeGenerator {
+public class PostGreSqlCodeGenerator {
 
     // 数据库连接配置
     private static final String JDBC_URL = "jdbc:postgresql://xxx:5432/jdd2db?currentSchema=jdd2db";
