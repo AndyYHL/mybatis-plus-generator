@@ -51,7 +51,7 @@ public class CodeGenerator {
         // 2.全局配置
         // 覆盖已生成文件
         // 不打开生成文件目录
-        // 指定输出目录,注意使用反斜杠\
+        // 指定输出目录,注意使用反斜杠
         // 设置注释的作者
         // 设置注释的日期格式
         // 使用java8新的时间类型
@@ -174,12 +174,12 @@ public class CodeGenerator {
         // 6.3.Service策略配置
         // 格式化service接口和实现类的文件名称，去掉默认的ServiceName前面的I
         fastAutoGenerator.strategyConfig(strategyConfigBuilder ->
-                strategyConfigBuilder.serviceBuilder()
-                        //继承
-                        .superServiceClass(IService.class)
-                        .formatServiceFileName("I%sService")
-                        .superServiceImplClass(ServiceImpl.class)
-                        .formatServiceImplFileName("%sService")
+                        strategyConfigBuilder.serviceBuilder()
+                                //继承
+                                .superServiceClass(IService.class)
+                                .formatServiceFileName("I%sService")
+                                .superServiceImplClass(ServiceImpl.class)
+                                .formatServiceImplFileName("%sService")
                 // 禁止覆盖
                 //.enableFileOverride()
         );
@@ -187,14 +187,14 @@ public class CodeGenerator {
         // 6.4.Mapper策略配置
         // 格式化 mapper文件名,格式化xml实现类文件名称
         fastAutoGenerator.strategyConfig(strategyConfigBuilder ->
-                strategyConfigBuilder.mapperBuilder()
-                        .superClass(BaseMapper.class)
-                        .mapperAnnotation(Mapper.class)
-                        //生成通用的resultMap
-                        .enableBaseResultMap()
-                        .enableBaseColumnList()
-                        .formatMapperFileName("%sMapper")
-                        .formatXmlFileName("%sMapper")
+                        strategyConfigBuilder.mapperBuilder()
+                                .superClass(BaseMapper.class)
+                                .mapperAnnotation(Mapper.class)
+                                //生成通用的resultMap
+                                .enableBaseResultMap()
+                                .enableBaseColumnList()
+                                .formatMapperFileName("%sMapper")
+                                .formatXmlFileName("%sMapper")
                 // 禁止覆盖
                 //.enableFileOverride()
         );
