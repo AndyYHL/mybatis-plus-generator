@@ -10,7 +10,9 @@ import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
 import com.baomidou.mybatisplus.generator.config.OutputFile;
 import com.baomidou.mybatisplus.generator.config.TemplateType;
 import com.baomidou.mybatisplus.generator.config.builder.CustomFile;
+import com.baomidou.mybatisplus.generator.config.converts.PostgreSqlTypeConvert;
 import com.baomidou.mybatisplus.generator.config.rules.DateType;
+import com.baomidou.mybatisplus.generator.config.rules.DbColumnType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.engine.AbstractTemplateEngine;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
@@ -19,6 +21,7 @@ import com.example.generator.pojo.domain.BaseEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.junit.platform.commons.util.StringUtils;
 
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +46,15 @@ public class CodeGenerator {
         String path = System.getProperty("user.dir");
         String finalPath = "D:\\jjjj";
         // 1.数据库配置
-        DataSourceConfig.Builder dataSourceConfigBuilder = new DataSourceConfig.Builder(JDBC_URL, JDBC_USER_NAME, JDBC_PASSOWRD);
+        DataSourceConfig.Builder dataSourceConfigBuilder = new DataSourceConfig.Builder(JDBC_URL, JDBC_USER_NAME, JDBC_PASSOWRD)
+                .typeConvert(new PostgreSqlTypeConvert())
+                .typeConvertHandler(((globalConfig, typeRegistry, metaInfo) -> {
+                    int typeCode = metaInfo.getJdbcType().TYPE_CODE;
+                    if (typeCode == Types.NUMERIC) {
+                        return DbColumnType.BIG_DECIMAL;
+                    }
+                    return typeRegistry.getColumnType(metaInfo);
+                }));
 
         // 1.1.快速生成器
         FastAutoGenerator fastAutoGenerator = FastAutoGenerator.create(dataSourceConfigBuilder);
