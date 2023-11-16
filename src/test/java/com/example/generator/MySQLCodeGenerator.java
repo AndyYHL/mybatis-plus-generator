@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
 import com.baomidou.mybatisplus.generator.config.OutputFile;
 import com.baomidou.mybatisplus.generator.config.TemplateType;
 import com.baomidou.mybatisplus.generator.config.builder.CustomFile;
+import com.baomidou.mybatisplus.generator.config.converts.MySqlTypeConvert;
 import com.baomidou.mybatisplus.generator.config.converts.PostgreSqlTypeConvert;
 import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.config.rules.DbColumnType;
@@ -18,7 +19,6 @@ import com.baomidou.mybatisplus.generator.engine.AbstractTemplateEngine;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 import com.baomidou.mybatisplus.generator.fill.Column;
 import com.baomidou.mybatisplus.generator.keywords.MySqlKeyWordsHandler;
-import com.baomidou.mybatisplus.generator.keywords.PostgreSqlKeyWordsHandler;
 import com.example.generator.pojo.domain.BaseEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.junit.platform.commons.util.StringUtils;
@@ -35,12 +35,12 @@ import java.util.Optional;
  * @author Administrator-YHL
  * @date 2023-10-23
  **/
-public class PostGreSqlCodeGenerator {
+public class MySQLCodeGenerator {
 
     // 数据库连接配置
-    private static final String JDBC_URL = "jdbc:postgresql://xxx:5432/jdd2db?currentSchema=jdd2db";
-    private static final String JDBC_USER_NAME = "xxx";
-    private static final String JDBC_PASSWORD = "xxx";
+    private static final String JDBC_URL = "jdbc:mysql://127.0.0.1:3306/mybatis-plus";
+    private static final String JDBC_USER_NAME = "root";
+    private static final String JDBC_PASSWORD = "123456";
 
     // 生成代码入口main方法
     public static void main(String[] args) {
@@ -49,8 +49,8 @@ public class PostGreSqlCodeGenerator {
         String finalPath = "D:\\jjjj";
         // 1.数据库配置
         DataSourceConfig.Builder dataSourceConfigBuilder = new DataSourceConfig.Builder(JDBC_URL, JDBC_USER_NAME, JDBC_PASSWORD)
-                .typeConvert(new PostgreSqlTypeConvert())
-                .keyWordsHandler(new PostgreSqlKeyWordsHandler())
+                .typeConvert(new MySqlTypeConvert())
+                .keyWordsHandler(new MySqlKeyWordsHandler())
                 .typeConvertHandler(((globalConfig, typeRegistry, metaInfo) -> {
                     int typeCode = metaInfo.getJdbcType().TYPE_CODE;
                     if (typeCode == Types.NUMERIC) {
