@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -78,6 +79,14 @@ public interface ILoginApi {
      *
      * @return
      */
-    @PostMapping(value = "/downloadFile", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    ResponseEntity<InputStreamResource> downloadFile();
+    @PostMapping(value = "/downloadFileInputStream", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    ResponseEntity<InputStreamResource> downloadFileInputStreamResource();
+
+    /**
+     * 下载文件
+     *
+     * @return
+     */
+    @PostMapping(value = "/downloadFileByteArray", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    ResponseEntity<ByteArrayResource> downloadFileByteArrayResource();
 }

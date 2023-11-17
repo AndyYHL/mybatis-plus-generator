@@ -12,11 +12,9 @@ import com.example.generator.web.api.channel.ILoginApi;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.imageio.ImageIO;
@@ -109,7 +107,7 @@ public class LoginController implements ILoginApi {
     }
 
     @Override
-    public ResponseEntity<InputStreamResource> downloadFile() {
+    public ResponseEntity<InputStreamResource> downloadFileInputStreamResource() {
         BufferedImage bufferedImage = this.getClassQrZuHe("11111", 0, 0);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
@@ -126,5 +124,22 @@ public class LoginController implements ILoginApi {
         headers.setContentDisposition(ContentDisposition.attachment().filename("file.png").build());
         // 返回InputStreamResource对象和响应头
         return ResponseEntity.ok().headers(headers).body(resource);
+    }
+
+    @Override
+    public ResponseEntity<ByteArrayResource> downloadFileByteArrayResource() {
+        BufferedImage bufferedImage = this.getClassQrZuHe("11111", 0, 0);
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(bufferedImage, "png", os);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        // 设置响应头，指定文件名
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentDisposition(ContentDisposition.attachment().filename("file9.png").build());
+
+        ByteArrayResource resource = new ByteArrayResource(os.toByteArray());
+        return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
 }
