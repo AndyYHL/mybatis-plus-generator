@@ -21,6 +21,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * LoginController描述
@@ -79,20 +81,24 @@ public class LoginController implements ILoginApi {
         // 读取图片
         BufferedImage image = null;
         try {
-            image = ImageIO.read(new FileInputStream("C:\\Users\\Administrator\\Desktop\\doubleScreen\\images\\nodesign.png"));
+            image = ImageIO.read(new FileInputStream("C:\\Users\\Administrator\\Desktop\\base\\25175591_115124404035_2.png"));
+            String txt = "版权所有:" + content + "x:" + image.getWidth() + "y:" + image.getHeight();
+            int px = (image.getWidth() / 2 - BigDecimal.valueOf(txt.length() * 7.22).setScale(0, RoundingMode.UP).intValue() - x);
+            int py = (image.getHeight() / 2 - 20 + y);
+            log.info("x:{},y:{},长度:{}", px, py, txt.length());
             Image image1 = ImgUtil.pressText(
                     image,
-                    "版权所有:" + content + "x:" + image.getWidth() + "y:" + image.getHeight(), Color.WHITE, //文字
+                    txt, Color.WHITE, //文字
                     new Font("黑体", Font.BOLD, 20), //字体
-                    x, //x坐标修正值。 默认在中间，偏移量相对于中间偏移
-                    y, //y坐标修正值。 默认在中间，偏移量相对于中间偏移
+                    px, //x坐标修正值。 默认在中间，偏移量相对于中间偏移
+                    py, //y坐标修正值。 默认在中间，偏移量相对于中间偏移
                     0.8f//透明度：alpha 必须是范围 [0.0, 1.0] 之内（包含边界值）的一个浮点数字
             );
             image = ImgUtil.toBufferedImage(image1);
             String url = "https://www.baidu.com/s?wd=" + content;
             BufferedImage qr = QrCodeUtil.generate(url, config);
             Graphics2D g = image.createGraphics();
-            g.drawImage(qr, 50, 50, null);
+            g.drawImage(qr, 230, 525, null);
             g.dispose();
         } catch (IOException e) {
             throw new RuntimeException(e);
