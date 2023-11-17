@@ -9,7 +9,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.image.BufferedImage;
@@ -69,5 +71,8 @@ public interface ILoginApi {
      */
     @GetMapping(value = "/getClassQrZuHe/{content}/{x}/{y}", produces = MediaType.IMAGE_PNG_VALUE)
     @ResponseBody
-    BufferedImage getClassQrZuHe(@PathVariable("content") String content,@PathVariable("x") Integer x,@PathVariable("y") Integer y);
+    BufferedImage getClassQrZuHe(@PathVariable("content") String content, @PathVariable("x") Integer x, @PathVariable("y") Integer y);
+
+    @PostMapping("/downloadFile")
+    ResponseEntity<InputStreamResource> downloadFile();
 }

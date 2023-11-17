@@ -12,15 +12,17 @@ import com.example.generator.web.api.channel.ILoginApi;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -104,5 +106,25 @@ public class LoginController implements ILoginApi {
             throw new RuntimeException(e);
         }
         return image;
+    }
+
+    @Override
+    public ResponseEntity<InputStreamResource> downloadFile() {
+        BufferedImage bufferedImage = this.getClassQrZuHe("11111", 0, 0);
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(bufferedImage, "png", os);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        InputStream inputStream = new ByteArrayInputStream(os.toByteArray());
+        // 创建InputStreamResource对象，封装文件输入流
+        InputStreamResource resource = new InputStreamResource(inputStream);
+        // 设置响应头，指定文件名
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDisposition(ContentDisposition.attachment().filename("file.png").build());
+        // 返回InputStreamResource对象和响应头
+        return ResponseEntity.ok().headers(headers).body(resource);
     }
 }
