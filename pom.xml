@@ -30,6 +30,7 @@
         <knife4j.version>4.3.0</knife4j.version>
         <mybatis-typehandlers.version>1.0.2</mybatis-typehandlers.version>
         <sa-token.version>1.37.0</sa-token.version>
+        <zxing.version>3.5.2</zxing.version>
     </properties>
     <dependencies>
         <dependency>
@@ -166,6 +167,11 @@
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-spring-boot3-starter</artifactId>
             <version>${sa-token.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>${zxing.version}</version>
         </dependency>
     </dependencies>
 
