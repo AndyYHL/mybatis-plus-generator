@@ -137,7 +137,7 @@ public class LoginController implements ILoginApi {
         }
         // 设置响应头，指定文件名
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentDisposition(ContentDisposition.attachment().filename("file9.png").build());
+        headers.setContentDisposition(ContentDisposition.attachment().filename("file.png").build());
 
         ByteArrayResource resource = new ByteArrayResource(os.toByteArray());
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
