@@ -73,6 +73,11 @@ public interface ILoginApi {
     @ResponseBody
     BufferedImage getClassQrZuHe(@PathVariable("content") String content, @PathVariable("x") Integer x, @PathVariable("y") Integer y);
 
-    @PostMapping("/downloadFile")
+    /**
+     * 下载文件
+     *
+     * @return
+     */
+    @PostMapping(value = "/downloadFile", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     ResponseEntity<InputStreamResource> downloadFile();
 }
