@@ -4,6 +4,8 @@ package com.example.generator.pojo.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Arrays;
+
 /**
  * <p>
  * Authority描述:权限编码
@@ -45,4 +47,24 @@ public enum AuthorityEnum {
      * 说明
      */
     private final String name;
+
+    /**
+     * 判断传入的枚举是否存在当前枚举中
+     *
+     * @param code 编码值
+     * @return 一个都没有匹配到返回 true
+     */
+    public static boolean enumNoneMatch(Integer code) {
+        return Arrays.stream(values()).noneMatch(m -> code.equals(m.getCode()));
+    }
+
+    /**
+     * 根据code 获取本身枚举
+     *
+     * @param code 编码值
+     * @return 枚举
+     */
+    public static AuthorityEnum findByCodeEnum(Integer code) {
+        return Arrays.stream(values()).filter(r -> r.getCode().equals(code)).findFirst().orElseThrow();
+    }
 }
