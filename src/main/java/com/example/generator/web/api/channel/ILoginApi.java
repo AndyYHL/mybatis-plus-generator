@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 /**
  * ILoginApi描述
@@ -89,4 +90,12 @@ public interface ILoginApi {
      */
     @PostMapping(value = "/downloadFileByteArray", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     ResponseEntity<ByteArrayResource> downloadFileByteArrayResource();
+
+    /**
+     *
+     * @param nameList
+     * @return
+     */
+    @PostMapping(value = "/user/dictList")
+    ApiResponse<Object> dictList(@RequestBody ApiRequest<List<String>> nameList);
 }

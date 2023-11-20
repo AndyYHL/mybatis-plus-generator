@@ -2,6 +2,7 @@ package com.example.generator.web.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.img.ImgUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.extra.qrcode.QrCodeException;
 import cn.hutool.extra.qrcode.QrCodeUtil;
 import cn.hutool.extra.qrcode.QrConfig;
@@ -12,9 +13,12 @@ import com.example.generator.web.api.channel.ILoginApi;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.http.*;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.imageio.ImageIO;
@@ -23,6 +27,8 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.*;
+import java.util.List;
 
 /**
  * LoginController描述
@@ -141,5 +147,47 @@ public class LoginController implements ILoginApi {
 
         ByteArrayResource resource = new ByteArrayResource(os.toByteArray());
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+    }
+
+    @Override
+    public ApiResponse<Object> dictList(ApiRequest<List<String>> nameList) {
+        var map = this.findEnumValues("com.example.generator.pojo.enums", nameList.getParam());
+        return ApiResponse.success(map);
+    }
+    private Map<Object, Object> findEnumValues(String packageName, List<String> nameList) {
+        var provider = new ClassPathScanningCandidateComponentProvider(true);
+        provider.addIncludeFilter(new AssignableTypeFilter(Object.class));
+        var sets = provider.findCandidateComponents(packageName);
+        var builder = MapUtil.builder();
+        sets.stream().filter(t -> nameList.stream().anyMatch(it -> {
+            final String[] split = Objects.requireNonNull(t.getBeanClassName()).split("\\.");
+            return split[split.length - 1].equals(it);
+        })).forEach(t -> {
+            var dataList = new ArrayList<>();
+            try {
+                var enums = ClassUtils.forName(t.getBeanClassName(), this.getClass().getClassLoader());
+                var list = enums.getEnumConstants();
+                Arrays.stream(list).forEach(e -> {
+                    var itemMap = new HashMap<String, Object>();
+                    Arrays.stream(enums.getDeclaredMethods()).forEach(m -> {
+                        try {
+                            if (m.getName().equals("getValue") || m.getName().equals("getCode") || m.getName().equals("getType")) {
+                                itemMap.put("value", m.invoke(e));
+                            }
+                            if (m.getName().equals("getDesc") || m.getName().equals("getMsg") || m.getName().equals("getName")) {
+                                itemMap.put("label", m.invoke(e));
+                            }
+                        } catch (Exception exception) {
+                            log.error("", exception);
+                        }
+                    });
+                    dataList.add(itemMap);
+                });
+            } catch (ClassNotFoundException e) {
+                log.error("", e);
+            }
+            builder.put(t.getBeanClassName().substring(t.getBeanClassName().lastIndexOf(".") + 1), dataList);
+        });
+        return builder.build();
     }
 }
