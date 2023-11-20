@@ -27,8 +27,8 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * LoginController描述
@@ -154,6 +154,8 @@ public class LoginController implements ILoginApi {
         var map = this.findEnumValues("com.example.generator.pojo.enums", nameList.getParam());
         return ApiResponse.success(map);
     }
+
+    @SuppressWarnings("all")
     private Map<Object, Object> findEnumValues(String packageName, List<String> nameList) {
         var provider = new ClassPathScanningCandidateComponentProvider(true);
         provider.addIncludeFilter(new AssignableTypeFilter(Object.class));
