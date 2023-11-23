@@ -25,8 +25,6 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 import java.util.*;
 
@@ -89,8 +87,8 @@ public class LoginController implements ILoginApi {
         try {
             image = ImageIO.read(new FileInputStream("C:\\Users\\Administrator\\Desktop\\base\\25175591_115124404035_2.png"));
             String txt = "版权所有:" + content + "x:" + image.getWidth() + "y:" + image.getHeight();
-            int px = (image.getWidth() / 2 - BigDecimal.valueOf(txt.length() * 7.22).setScale(0, RoundingMode.UP).intValue() - x);
-            int py = (image.getHeight() / 2 - 20 + y);
+            int px = 0;
+            int py = 0;
             log.info("x:{},y:{},长度:{}", px, py, txt.length());
             Image image1 = ImgUtil.pressText(
                     image,
@@ -102,9 +100,12 @@ public class LoginController implements ILoginApi {
             );
             image = ImgUtil.toBufferedImage(image1);
             String url = "https://www.baidu.com/s?wd=" + content;
+            config.setHeight(700);
+            config.setWidth(700);
+            config.setBackColor(null);
             BufferedImage qr = QrCodeUtil.generate(url, config);
             Graphics2D g = image.createGraphics();
-            g.drawImage(qr, 230, 525, null);
+            g.drawImage(qr, x, y, null);
             g.dispose();
         } catch (IOException e) {
             throw new RuntimeException(e);
