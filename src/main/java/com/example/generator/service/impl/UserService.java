@@ -26,11 +26,6 @@ import java.time.ZoneOffset;
 @Slf4j
 @Service
 public class UserService implements IUserService {
-    @Autowired
-    private MessageHandler messageHandler;
-    @Autowired
-    private TransactionTemplate transactionTemplate;
-
     @Override
     public UserDO selectOne(Object object) {
         log.info("请求参数：[{}]", JSON.toJSONString(object));
@@ -45,26 +40,6 @@ public class UserService implements IUserService {
         MessageDTO messageDTO = new MessageDTO();
         messageDTO.setTitle("通过handler发送消息：" + userDO.getUserName());
         messageDTO.setBody("通过handler消息内容：" + userDO.getUserId());
-        this.messageHandler.handle(messageDTO);
-        //设置事务传播属性
-        transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-        // 设置事务的隔离级别,设置为读已提交（默认是ISOLATION_DEFAULT:使用的是底层数据库的默认的隔离级别）
-        transactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
-        // 设置是否只读，默认是false
-        transactionTemplate.setReadOnly(true);
-        // 默认使用的是数据库底层的默认的事务的超时时间
-        transactionTemplate.setTimeout(30000);
-
-        transactionTemplate.execute(status -> {
-            try {
-                //.......   业务代码
-                return new Object();
-            } catch (Exception e) {
-                //回滚
-                status.setRollbackOnly();
-                return null;
-            }
-        });
         return userDO;
     }
 }

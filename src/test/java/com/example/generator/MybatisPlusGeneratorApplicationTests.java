@@ -3,6 +3,7 @@ package com.example.generator;
 import com.example.generator.pojo.domain.UserDO;
 import com.example.generator.pojo.enums.AuthorityEnum;
 import com.example.generator.util.AuthToolsUtil;
+import com.example.generator.util.MybatisPlusColumnResolver;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +15,8 @@ import java.time.format.DateTimeFormatter;
 class MybatisPlusGeneratorApplicationTests {
     @Autowired
     private AuthToolsUtil authTools;
+    @Autowired
+    private MybatisPlusColumnResolver mybatisPlusColumnResolver;
 
     @Test
     void contextLoads() {
@@ -89,5 +92,14 @@ class MybatisPlusGeneratorApplicationTests {
         authTools.execOpera(user1, AuthorityEnum.READABLE);
         authTools.execOpera(user1, AuthorityEnum.RUNNABLE);
         authTools.execOpera(user2, AuthorityEnum.READABLE);
+    }
+
+    /**
+     * 获取数据库字段
+     */
+    @Test
+    public void excTest() {
+        MybatisPlusColumnResolver.ColumnResolver<UserDO> columnResolver = this.mybatisPlusColumnResolver.create();
+        System.out.println(columnResolver.columnToString(UserDO::getUserName));
     }
 }
