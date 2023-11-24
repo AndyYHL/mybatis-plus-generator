@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * SystemController描述
@@ -49,11 +50,20 @@ public class CommonController implements ICommonApi {
         List<UserVO> list = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             UserVO userVO = new UserVO();
-            userVO.setUserId("用户ID"+System.currentTimeMillis());
-            userVO.setUserName("用户名称"+System.currentTimeMillis());
+            userVO.setUserId("用户ID" + System.currentTimeMillis() + i);
+            userVO.setUserName("用户名称" + System.currentTimeMillis() + i);
             list.add(userVO);
         }
+        this.funUser(list, UserVO::getUserName);
         return ApiPageResponse.successTrace(req.getTrace(), list);
+    }
+
+    // TODO 函数设置值
+    private void funUser(List<UserVO> list, Function<UserVO, String> fun) {
+        list.forEach(r -> {
+            String name = fun.apply(r);
+            log.info("函数获取:{}", name);
+        });
     }
 
     @Override

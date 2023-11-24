@@ -1,5 +1,7 @@
 package com.example.generator.util;
 
+import org.springframework.stereotype.Component;
+
 /**
  * <p>
  * BitUtil描述:进制转换
@@ -12,6 +14,7 @@ package com.example.generator.util;
  * @author Administrator-YHL
  * @date 2023年11月14日 16:02
  */
+@Component
 public class BitUtil {
     /**
      * 16进制字符串转10进制

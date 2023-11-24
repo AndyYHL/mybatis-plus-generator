@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * UserParam描述
  *
@@ -12,7 +14,7 @@ import lombok.Data;
  **/
 @Data
 @Tag(name = "UserParam", description = "用户保存")
-public class UserVO {
+public class UserVO implements Serializable {
     /**
      * 用户ID
      */
