@@ -1,22 +1,25 @@
 package com.example.generator;
 
+import cn.hutool.core.lang.func.LambdaUtil;
+import com.baomidou.mybatisplus.core.toolkit.LambdaUtils;
+import com.baomidou.mybatisplus.core.toolkit.support.ColumnCache;
+import com.example.generator.pojo.domain.AccountDO;
 import com.example.generator.pojo.domain.UserDO;
 import com.example.generator.pojo.enums.AuthorityEnum;
 import com.example.generator.util.AuthToolsUtil;
-import com.example.generator.util.MybatisPlusColumnResolver;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
+import java.util.Objects;
 
 @SpringBootTest
 class MybatisPlusGeneratorApplicationTests {
     @Autowired
     private AuthToolsUtil authTools;
-    @Autowired
-    private MybatisPlusColumnResolver mybatisPlusColumnResolver;
 
     @Test
     void contextLoads() {
@@ -99,7 +102,17 @@ class MybatisPlusGeneratorApplicationTests {
      */
     @Test
     public void excTest() {
-        MybatisPlusColumnResolver.ColumnResolver<UserDO> columnResolver = this.mybatisPlusColumnResolver.create();
-        System.out.println(columnResolver.columnToString(UserDO::getUserName));
+        //获取实体所有对应的列
+        Map<String, ColumnCache> testMap = LambdaUtils.getColumnMap(AccountDO.class);
+        //hutool包，获取实体属性名称
+        String fieldName = LambdaUtil.getFieldName(AccountDO::getAccountName);
+        String methodName = LambdaUtil.getMethodName(AccountDO::getAccountNo);
+        System.out.println(fieldName);
+        System.out.println(methodName);
+        //通过属性名获取对应的列名
+        if (Objects.nonNull(testMap)) {
+            String column = testMap.get(LambdaUtils.formatKey(fieldName)).getColumn();
+            System.out.println(column);
+        }
     }
 }
