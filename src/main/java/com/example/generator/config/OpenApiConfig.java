@@ -7,7 +7,9 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import lombok.RequiredArgsConstructor;
 import org.springdoc.core.models.GroupedOpenApi;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,7 +19,9 @@ import org.springframework.context.annotation.Configuration;
  * @author Administrator-YHL
  * @date 2023-10-18
  **/
+@RequiredArgsConstructor
 @Configuration
+@ConditionalOnProperty(name = "springdoc.api-docs.enabled", havingValue = "true", matchIfMissing = true)
 public class OpenApiConfig {
     @Bean
     public OpenAPI springOpenApi() {
