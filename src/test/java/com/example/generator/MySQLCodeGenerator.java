@@ -11,7 +11,6 @@ import com.baomidou.mybatisplus.generator.config.OutputFile;
 import com.baomidou.mybatisplus.generator.config.TemplateType;
 import com.baomidou.mybatisplus.generator.config.builder.CustomFile;
 import com.baomidou.mybatisplus.generator.config.converts.MySqlTypeConvert;
-import com.baomidou.mybatisplus.generator.config.converts.PostgreSqlTypeConvert;
 import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.config.rules.DbColumnType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
@@ -154,7 +153,7 @@ public class MySQLCodeGenerator {
         fastAutoGenerator.strategyConfig((scanner, strategyConfigBuilder) -> {
             strategyConfigBuilder.entityBuilder().enableLombok()
                     // 继承的类
-                    //.superClass(BaseEntity.class)
+                    .superClass(BaseEntity.class)
                     //不实现 Serializable 接口，不生产 SerialVersionUID
                     .disableSerialVersionUID()
                     // 乐观锁实体类名称
@@ -248,7 +247,7 @@ public class MySQLCodeGenerator {
         fastAutoGenerator.strategyConfig((scanner, strategyConfigBuilder) -> {
             strategyConfigBuilder.entityBuilder().enableLombok()
                     // 继承的类
-                    //.superClass(BaseEntity.class)
+                    .superClass(BaseEntity.class)
                     //不实现 Serializable 接口，不生产 SerialVersionUID
                     .disableSerialVersionUID()
                     // 乐观锁实体类名称
