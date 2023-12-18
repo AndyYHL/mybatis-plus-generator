@@ -38,9 +38,9 @@ import java.util.Optional;
 public class MySQLCodeGenerator {
 
     // 数据库连接配置
-    private static final String JDBC_URL = "jdbc:mysql://127.0.0.1:3306/mybatis-plus";
-    private static final String JDBC_USER_NAME = "root";
-    private static final String JDBC_PASSWORD = "123456";
+    private static final String JDBC_URL = "jdbc:mysql://xxx:3306/ty?serverTimezone=Hongkong&allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false";
+    private static final String JDBC_USER_NAME = "xxx";
+    private static final String JDBC_PASSWORD = "xxx";
 
     // 生成代码入口main方法
     public static void main(String[] args) {
