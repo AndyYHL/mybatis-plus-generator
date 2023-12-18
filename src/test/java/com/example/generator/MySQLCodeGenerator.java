@@ -38,9 +38,9 @@ import java.util.Optional;
 public class MySQLCodeGenerator {
 
     // 数据库连接配置
-    private static final String JDBC_URL = "jdbc:mysql://xxx:3306/ty?serverTimezone=Hongkong&allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false";
-    private static final String JDBC_USER_NAME = "xxx";
-    private static final String JDBC_PASSWORD = "xxx";
+    private static final String JDBC_URL = "jdbc:mysql://192.168.70.23:3306/ty?serverTimezone=Hongkong&allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false";
+    private static final String JDBC_USER_NAME = "toyou";
+    private static final String JDBC_PASSWORD = "Toyou_123";
 
     // 生成代码入口main方法
     public static void main(String[] args) {
@@ -77,7 +77,8 @@ public class MySQLCodeGenerator {
                     //开启 kotlin 模式 默认值:false
                     // .enableKotlin()
                     //开启swagger 默认值:false
-                    .enableSpringdoc()
+                    .enableSwagger()
+                    //.enableSpringdoc()
                     // 禁止打开输出目录
                     .disableOpenDir()
                     //时间策略 DateType.ONLY_DATE 默认值: DateType.TIME_PACK
@@ -153,7 +154,7 @@ public class MySQLCodeGenerator {
         fastAutoGenerator.strategyConfig((scanner, strategyConfigBuilder) -> {
             strategyConfigBuilder.entityBuilder().enableLombok()
                     // 继承的类
-                    .superClass(BaseEntity.class)
+                    //.superClass(BaseEntity.class)
                     //不实现 Serializable 接口，不生产 SerialVersionUID
                     .disableSerialVersionUID()
                     // 乐观锁实体类名称
@@ -247,7 +248,7 @@ public class MySQLCodeGenerator {
         fastAutoGenerator.strategyConfig((scanner, strategyConfigBuilder) -> {
             strategyConfigBuilder.entityBuilder().enableLombok()
                     // 继承的类
-                    .superClass(BaseEntity.class)
+                    //.superClass(BaseEntity.class)
                     //不实现 Serializable 接口，不生产 SerialVersionUID
                     .disableSerialVersionUID()
                     // 乐观锁实体类名称
