@@ -1,5 +1,8 @@
 package com.example.generator.util;
 
+import cn.hutool.core.util.ReflectUtil;
+import com.alibaba.fastjson2.JSON;
+import com.example.generator.pojo.dto.UserDTO;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -121,6 +124,8 @@ public class BitUtil {
     }
 
     public static void main(String[] args) {
-        System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+        UserDTO userDTO = new UserDTO();
+        ReflectUtil.invoke(userDTO, "setUserId", "10");
+        System.out.println(JSON.toJSONString(userDTO));
     }
 }
