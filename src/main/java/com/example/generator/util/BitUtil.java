@@ -2,6 +2,9 @@ package com.example.generator.util;
 
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 /**
  * <p>
  * BitUtil描述:进制转换
@@ -115,5 +118,9 @@ public class BitUtil {
             }
         }
         return strings;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
     }
 }
