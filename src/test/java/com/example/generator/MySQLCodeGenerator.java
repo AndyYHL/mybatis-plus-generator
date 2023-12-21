@@ -137,6 +137,11 @@ public class MySQLCodeGenerator {
         // 生成扩展配置
         extend(fastAutoGenerator);
         System.out.println("end 生成扩展配置");
+
+        System.out.println("start 生成VO");
+        // 生成扩展配置
+        extendVO(fastAutoGenerator);
+        System.out.println("end 生成VO");
     }
 
     /**
@@ -270,11 +275,10 @@ public class MySQLCodeGenerator {
 
         // 6.6 扩展类型生成
         fastAutoGenerator.injectionConfig((scanner, consumer) -> {
-            String hasGenerate = scanner.apply("是否生成DO/DTO/VO");
+            String hasGenerate = scanner.apply("是否生成DO/DTO");
             if (hasGenerate.equals("是")) {
                 consumer.customFile(new CustomFile.Builder().fileName("DO.java").templatePath("/templates/entityDO.java.ftl").packageName("pojo.do").enableFileOverride().build())
                         .customFile(new CustomFile.Builder().fileName("DTO.java").templatePath("/templates/entityDTO.java.ftl").packageName("pojo.dto").enableFileOverride().build())
-                        .customFile(new CustomFile.Builder().fileName("VO.java").templatePath("/templates/entityVO.java.ftl").packageName("pojo.vo").enableFileOverride().build())
                         .build();
             }
         });
@@ -282,6 +286,40 @@ public class MySQLCodeGenerator {
         fastAutoGenerator.execute();
     }
 
+    /**
+     * 生成VO
+     */
+    protected static void extendVO(FastAutoGenerator fastAutoGenerator) {
+        // 6.1.Entity策略配置
+        // 生成实体时生成字段的注解，包括@TableId注解等
+        // 数据库表和字段映射到实体的命名策略，为下划线转驼峰
+        // 全局主键类型为None
+        // 实体名称格式化为XXXEntity
+        fastAutoGenerator.strategyConfig((scanner, strategyConfigBuilder) -> {
+            strategyConfigBuilder.entityBuilder().enableLombok()
+                    //不实现 Serializable 接口，不生产 SerialVersionUID
+                    .disableSerialVersionUID()
+                    //数据库表映射到实体的命名策略：下划线转驼峰命
+                    .naming(NamingStrategy.underline_to_camel)
+                    //数据库表字段映射到实体的命名策略：下划线转驼峰命hh
+                    .columnNaming(NamingStrategy.underline_to_camel).idType(IdType.AUTO)
+                    //开启生成实体时生成字段注解
+                    .enableTableFieldAnnotation()
+                    .formatFileName("%s")
+                    .enableFileOverride();
+        });
+
+        // 6.6 扩展类型生成
+        fastAutoGenerator.injectionConfig((scanner, consumer) -> {
+            String hasGenerate = scanner.apply("是否生成VO");
+            if (hasGenerate.equals("是")) {
+                consumer.customFile(new CustomFile.Builder().fileName("VO.java").templatePath("/templates/entityVO.java.ftl").packageName("pojo.vo").enableFileOverride().build())
+                        .build();
+            }
+        });
+        // 7.生成代码
+        fastAutoGenerator.execute();
+    }
     /**
      * 处理 all 情况
      *
