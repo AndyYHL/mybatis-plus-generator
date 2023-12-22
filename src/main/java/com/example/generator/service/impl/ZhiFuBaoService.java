@@ -3,7 +3,6 @@ package com.example.generator.service.impl;
 import com.example.generator.pojo.param.PayParam;
 import com.example.generator.service.abstraction.AbsPayMode;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 /**
