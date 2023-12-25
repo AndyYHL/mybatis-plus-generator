@@ -1,4 +1,4 @@
-package com.example.generator.helper;
+package com.example.generator.pojo.helper;
 
 import com.example.generator.util.IOUtil;
 import com.example.generator.util.SslUtil;
