@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.function.Supplier;
 
 /**
@@ -75,6 +76,14 @@ public enum Operation implements IOperation {
             System.out.printf("%f %s %f = %f%n",
                     x, operation, y, operation.apply(x, y));
         }
-
+        EnumSet<AuthorityEnum> week = EnumSet.noneOf(AuthorityEnum.class);
+        week.add(AuthorityEnum.READABLE);
+        System.out.println("EnumSet中的元素：" + week);
+        week.remove(AuthorityEnum.READABLE);
+        System.out.println("EnumSet中的元素：" + week);
+        week.addAll(EnumSet.complementOf(week));
+        System.out.println("EnumSet中的元素：" + week);
+        week.removeAll(EnumSet.range(AuthorityEnum.RUNNABLE, AuthorityEnum.READABLE));
+        System.out.println("EnumSet中的元素：" + week);
     }
 }
