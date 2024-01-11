@@ -2,15 +2,20 @@ package com.example.generator.pojo.exception;
 
 import com.example.generator.pojo.enums.BasicRespCode;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.io.Serial;
 
 /**
  * @author Administrator
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class BasicException extends RuntimeException {
     /**
      *
      */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String errorCode = BasicRespCode.FAIL.getCode();
