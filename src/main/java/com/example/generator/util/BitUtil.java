@@ -1,12 +1,8 @@
 package com.example.generator.util;
 
-import cn.hutool.core.util.ReflectUtil;
-import com.alibaba.fastjson2.JSON;
-import com.example.generator.pojo.dto.UserDTO;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.StringJoiner;
 
 /**
  * <p>
@@ -124,8 +120,13 @@ public class BitUtil {
     }
 
     public static void main(String[] args) {
-        UserDTO userDTO = new UserDTO();
+        /*UserDTO userDTO = new UserDTO();
         ReflectUtil.invoke(userDTO, "setUserId", "10");
-        System.out.println(JSON.toJSONString(userDTO));
+        System.out.println(JSON.toJSONString(userDTO));*/
+        StringJoiner joiner = new StringJoiner(",", "(", ")");
+        for (int i = 0; i < 10; i++) {
+            joiner.add("文字:" + i);
+        }
+        System.out.println(joiner);
     }
 }
