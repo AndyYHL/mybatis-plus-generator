@@ -17,9 +17,8 @@ import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.engine.AbstractTemplateEngine;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 import com.baomidou.mybatisplus.generator.fill.Column;
-import com.baomidou.mybatisplus.generator.keywords.MySqlKeyWordsHandler;
 import com.baomidou.mybatisplus.generator.keywords.PostgreSqlKeyWordsHandler;
-import com.example.generator.pojo.domain.BaseEntity;
+import com.example.generator.pojo.domain.base.BaseEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.junit.platform.commons.util.StringUtils;
 

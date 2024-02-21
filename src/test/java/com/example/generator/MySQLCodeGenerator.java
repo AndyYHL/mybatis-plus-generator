@@ -18,7 +18,6 @@ import com.baomidou.mybatisplus.generator.engine.AbstractTemplateEngine;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 import com.baomidou.mybatisplus.generator.fill.Column;
 import com.baomidou.mybatisplus.generator.keywords.MySqlKeyWordsHandler;
-import com.example.generator.pojo.domain.BaseEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.junit.platform.commons.util.StringUtils;
 
@@ -133,10 +132,15 @@ public class MySQLCodeGenerator {
         basics(fastAutoGenerator);
         System.out.println("end 生成基础配置");
 
-        System.out.println("start 生成扩展配置");
+        System.out.println("start 生成DO");
         // 生成扩展配置
         extend(fastAutoGenerator);
-        System.out.println("end 生成扩展配置");
+        System.out.println("end 生成DO");
+
+        System.out.println("start 生成DTO");
+        // 生成扩展配置
+        extendDTO(fastAutoGenerator);
+        System.out.println("end 生成DTO");
 
         System.out.println("start 生成VO");
         // 生成扩展配置
@@ -158,7 +162,7 @@ public class MySQLCodeGenerator {
         fastAutoGenerator.strategyConfig((scanner, strategyConfigBuilder) -> {
             strategyConfigBuilder.entityBuilder().enableLombok()
                     // 继承的类
-                    .superClass(BaseEntity.class)
+                    .superClass(com.example.generator.pojo.domain.base.BaseEntity.class)
                     //不实现 Serializable 接口，不生产 SerialVersionUID
                     .disableSerialVersionUID()
                     // 乐观锁实体类名称
@@ -252,7 +256,7 @@ public class MySQLCodeGenerator {
         fastAutoGenerator.strategyConfig((scanner, strategyConfigBuilder) -> {
             strategyConfigBuilder.entityBuilder().enableLombok()
                     // 继承的类
-                    .superClass(BaseEntity.class)
+                    .superClass(com.example.generator.pojo.domain.base.BaseEntity.class)
                     //不实现 Serializable 接口，不生产 SerialVersionUID
                     .disableSerialVersionUID()
                     // 乐观锁实体类名称
@@ -275,10 +279,45 @@ public class MySQLCodeGenerator {
 
         // 6.6 扩展类型生成
         fastAutoGenerator.injectionConfig((scanner, consumer) -> {
-            String hasGenerate = scanner.apply("是否生成DO/DTO");
+            String hasGenerate = scanner.apply("是否生成DO");
             if (hasGenerate.equals("是")) {
                 consumer.customFile(new CustomFile.Builder().fileName("DO.java").templatePath("/templates/entityDO.java.ftl").packageName("pojo.do").enableFileOverride().build())
-                        .customFile(new CustomFile.Builder().fileName("DTO.java").templatePath("/templates/entityDTO.java.ftl").packageName("pojo.dto").enableFileOverride().build())
+                        .build();
+            }
+        });
+        // 7.生成代码
+        fastAutoGenerator.execute();
+    }
+
+    /**
+     * 生成DTO
+     */
+    protected static void extendDTO(FastAutoGenerator fastAutoGenerator) {
+        // 6.1.Entity策略配置
+        // 生成实体时生成字段的注解，包括@TableId注解等
+        // 数据库表和字段映射到实体的命名策略，为下划线转驼峰
+        // 全局主键类型为None
+        // 实体名称格式化为XXXEntity
+        fastAutoGenerator.strategyConfig((scanner, strategyConfigBuilder) -> {
+            strategyConfigBuilder.entityBuilder().enableLombok()
+                    .superClass(com.example.generator.pojo.dto.base.BaseEntity.class)
+                    //不实现 Serializable 接口，不生产 SerialVersionUID
+                    .disableSerialVersionUID()
+                    //数据库表映射到实体的命名策略：下划线转驼峰命
+                    .naming(NamingStrategy.underline_to_camel)
+                    //数据库表字段映射到实体的命名策略：下划线转驼峰命hh
+                    .columnNaming(NamingStrategy.underline_to_camel).idType(IdType.AUTO)
+                    //开启生成实体时生成字段注解
+                    .enableTableFieldAnnotation()
+                    .formatFileName("%s")
+                    .enableFileOverride();
+        });
+
+        // 6.6 扩展类型生成
+        fastAutoGenerator.injectionConfig((scanner, consumer) -> {
+            String hasGenerate = scanner.apply("是否生成DTO");
+            if (hasGenerate.equals("是")) {
+                consumer.customFile(new CustomFile.Builder().fileName("DTO.java").templatePath("/templates/entityDTO.java.ftl").packageName("pojo.dto").enableFileOverride().build())
                         .build();
             }
         });
@@ -297,6 +336,7 @@ public class MySQLCodeGenerator {
         // 实体名称格式化为XXXEntity
         fastAutoGenerator.strategyConfig((scanner, strategyConfigBuilder) -> {
             strategyConfigBuilder.entityBuilder().enableLombok()
+                    .superClass("")
                     //不实现 Serializable 接口，不生产 SerialVersionUID
                     .disableSerialVersionUID()
                     //数据库表映射到实体的命名策略：下划线转驼峰命
@@ -320,6 +360,7 @@ public class MySQLCodeGenerator {
         // 7.生成代码
         fastAutoGenerator.execute();
     }
+
     /**
      * 处理 all 情况
      *

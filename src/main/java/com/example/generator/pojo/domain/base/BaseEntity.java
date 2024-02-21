@@ -1,4 +1,4 @@
-package com.example.generator.pojo.domain;
+package com.example.generator.pojo.domain.base;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;

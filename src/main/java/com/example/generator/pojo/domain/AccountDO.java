@@ -1,6 +1,7 @@
 package com.example.generator.pojo.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.example.generator.pojo.domain.base.BaseEntity;
 import lombok.Data;
 
 /**
