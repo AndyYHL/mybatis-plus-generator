@@ -297,6 +297,7 @@ public class MySQLCodeGenerator {
         // 生成实体时生成字段的注解，包括@TableId注解等
         // 数据库表和字段映射到实体的命名策略，为下划线转驼峰
         // 全局主键类型为None
+        fastAutoGenerator.packageConfig(c -> c.entity("pojo.dto"));
         // 实体名称格式化为XXXEntity
         fastAutoGenerator.strategyConfig((scanner, strategyConfigBuilder) -> {
             strategyConfigBuilder.entityBuilder().enableLombok()
@@ -333,6 +334,7 @@ public class MySQLCodeGenerator {
         // 生成实体时生成字段的注解，包括@TableId注解等
         // 数据库表和字段映射到实体的命名策略，为下划线转驼峰
         // 全局主键类型为None
+        fastAutoGenerator.packageConfig(c -> c.entity("pojo.vo"));
         // 实体名称格式化为XXXEntity
         fastAutoGenerator.strategyConfig((scanner, strategyConfigBuilder) -> {
             strategyConfigBuilder.entityBuilder().enableLombok()
