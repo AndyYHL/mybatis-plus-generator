@@ -27,13 +27,13 @@ import lombok.experimental.Accessors;
     </#if>
 </#if>
 <#if superEntityClass??>
-public class ${entity}DTO extends ${superEntityClass}<#if activeRecord><${entity}DTO></#if> {
+public class ${entity} extends ${superEntityClass}<#if activeRecord><${entity}></#if> {
 <#elseif activeRecord>
-public class ${entity}DTO extends Model<${entity}DTO> {
+public class ${entity} extends Model<${entity}> {
 <#elseif entitySerialVersionUID>
-public class ${entity}DTO implements Serializable {
+public class ${entity} implements Serializable {
 <#else>
-public class ${entity}DTO {
+public class ${entity} {
 </#if>
 <#if entitySerialVersionUID>
     private static final long serialVersionUID = 1L;
@@ -61,7 +61,7 @@ public class ${entity}DTO {
     }
 
     <#if chainModel>
-    public ${entity}DTO set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
+    public ${entity} set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
     <#else>
     public void set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
     </#if>
@@ -93,7 +93,7 @@ public class ${entity}DTO {
 
     @Override
     public String toString() {
-        return "${entity}DTO{" +
+        return "${entity}{" +
     <#list table.fields as field>
         <#if field_index==0>
             "${field.propertyName} = " + ${field.propertyName} +

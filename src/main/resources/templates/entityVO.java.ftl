@@ -33,18 +33,18 @@ import lombok.experimental.Accessors;
     </#if>
 </#if>
 <#if springdoc>
-@Schema(name = "${entity}VO", description = "${table.comment!}")
+@Schema(name = "${entity}", description = "${table.comment!}")
 <#elseif swagger>
-@ApiModel(value = "${entity}VO对象", description = "${table.comment!}")
+@ApiModel(value = "${entity}对象", description = "${table.comment!}")
 </#if>
 <#if superEntityClass??>
-public class ${entity}VO extends ${superEntityClass}<#if activeRecord><${entity}VO></#if> {
+public class ${entity} extends ${superEntityClass}<#if activeRecord><${entity}></#if> {
 <#elseif activeRecord>
-public class ${entity}VO extends Model<${entity}VO> {
+public class ${entity} extends Model<${entity}> {
 <#elseif entitySerialVersionUID>
-public class ${entity}VO implements Serializable {
+public class ${entity} implements Serializable {
 <#else>
-public class ${entity}VO {
+public class ${entity} {
 </#if>
 <#if entitySerialVersionUID>
 
@@ -88,7 +88,7 @@ public class ${entity}VO {
     }
 
     <#if chainModel>
-    public ${entity}VO set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
+    public ${entity} set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
     <#else>
     public void set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
     </#if>
@@ -120,7 +120,7 @@ public class ${entity}VO {
 
     @Override
     public String toString() {
-        return "${entity}VO{" +
+        return "${entity}{" +
     <#list table.fields as field>
         <#if field_index==0>
             "${field.propertyName} = " + ${field.propertyName} +

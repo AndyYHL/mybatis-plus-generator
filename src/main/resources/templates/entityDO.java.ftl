@@ -30,13 +30,13 @@ import lombok.experimental.Accessors;
 @TableName("${schemaName}${table.name}")
 </#if>
 <#if superEntityClass??>
-public class ${entity}DO extends ${superEntityClass}<#if activeRecord><${entity}DO></#if> {
+public class ${entity} extends ${superEntityClass}<#if activeRecord><${entity}></#if> {
 <#elseif activeRecord>
-public class ${entity}DO extends Model<${entity}DO> {
+public class ${entity} extends Model<${entity}> {
 <#elseif entitySerialVersionUID>
-public class ${entity}DO implements Serializable {
+public class ${entity} implements Serializable {
 <#else>
-public class ${entity}DO {
+public class ${entity} {
 </#if>
 <#if entitySerialVersionUID>
 
@@ -92,7 +92,7 @@ public class ${entity}DO {
     }
 
     <#if chainModel>
-    public ${entity}DO set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
+    public ${entity} set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
     <#else>
     public void set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
     </#if>
@@ -124,7 +124,7 @@ public class ${entity}DO {
 
     @Override
     public String toString() {
-        return "${entity}DO{" +
+        return "${entity}{" +
     <#list table.fields as field>
         <#if field_index==0>
             "${field.propertyName} = " + ${field.propertyName} +
