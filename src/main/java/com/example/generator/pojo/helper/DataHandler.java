@@ -12,23 +12,24 @@ import org.springframework.util.CollectionUtils;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Administrator
  */
-public class PageDataHandler implements Serializable {
+public class DataHandler implements Serializable {
 
     private final static long serialVersionUID = 1L;
 
     /**
      * 处理分页数据
      *
-     * @param pageData
+     * @param pageData ApiPageResponse<? extends R>
      * @param <T>
      * @return
      */
     @SuppressWarnings("all")
-    public static <R, T> ApiPageResponse<? extends R> convertResponsePage(IPage<T> pageData, Class<R> clazz) {
+    public static <R, T> ApiPageResponse<?> pageListDataHandle(IPage<T> pageData, Class<R> clazz) {
         ApiPageResponse<R> response = new ApiPageResponse<>();
         ApiPageResponseChild<R> child = new ApiPageResponseChild<>();
         if (CollectionUtils.isEmpty(pageData.getRecords())) {
@@ -63,6 +64,22 @@ public class PageDataHandler implements Serializable {
             return Collections.emptyList();
         }
         return JSON.parseArray(JSON.toJSONString(listData), clazz);
+    }
+
+    /**
+     * 单个对象处理
+     *
+     * @param data  数据
+     * @param clazz 转换的类型
+     * @param <R>   返回值
+     * @param <T>   输入值
+     * @return
+     */
+    public static <R, T> R dataHandle(T data, Class<R> clazz) {
+        if (Objects.isNull(data)) {
+            return null;
+        }
+        return JSON.parseObject(JSON.toJSONString(data), clazz);
     }
 
     /**
