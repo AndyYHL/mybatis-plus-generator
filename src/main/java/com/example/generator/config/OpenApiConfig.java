@@ -23,6 +23,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnProperty(name = "springdoc.api-docs.enabled", havingValue = "true", matchIfMissing = true)
 public class OpenApiConfig {
+    /**
+     * 单纯设置请求头
+     * .components(new Components().addSecuritySchemes(loginToken, new SecurityScheme()
+     * .type(SecurityScheme.Type.APIKEY)
+     * .in(SecurityScheme.In.HEADER)
+     * .name(loginToken)))
+     *
+     * @return
+     */
     @Bean
     public OpenAPI springOpenApi() {
         final String loginToken = "BearerAuth";
