@@ -26,6 +26,8 @@ import java.time.ZoneOffset;
 @Slf4j
 @Service
 public class UserService implements IUserService {
+    @Autowired
+    private MessageHandler messageHandler;
     @Override
     public UserDO selectOne(Object object) {
         log.info("请求参数：[{}]", JSON.toJSONString(object));
@@ -40,6 +42,7 @@ public class UserService implements IUserService {
         MessageDTO messageDTO = new MessageDTO();
         messageDTO.setTitle("通过handler发送消息：" + userDO.getUserName());
         messageDTO.setBody("通过handler消息内容：" + userDO.getUserId());
+        this.messageHandler.handle(messageDTO);
         return userDO;
     }
 }
