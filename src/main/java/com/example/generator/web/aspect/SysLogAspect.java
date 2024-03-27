@@ -1,11 +1,23 @@
 package com.example.generator.web.aspect;
 
+import com.alibaba.fastjson2.JSON;
+import com.example.generator.pojo.dto.UserDTO;
+import com.example.generator.pojo.helper.LoginHelper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * SysLogAspect描述
@@ -63,6 +75,9 @@ public class SysLogAspect {
     @Around("pointcutExpression()")
     public Object aroundMethod(ProceedingJoinPoint pjd) {
         StopWatch clock = new StopWatch();
+        UserDTO userDTO = LoginHelper.getLoginUser();
+        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+        String uri = request.getRequestURI();//获取请求路径
         //返回的结果
         Object result = null;
         //方法名称
@@ -72,20 +87,26 @@ public class SysLogAspect {
             // 计时开始
             clock.start();
             //前置通知
+            MDC.put("TRACE_ID", String.format("%s(%s)", userDTO.getUserId(), userDTO.getUserName()));
+            MDC.put("reqFile", String.format("%s-%s-%s-%s", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")),
+                    userDTO.getUserId(), userDTO.getUserName(), uri.replaceAll("/", "-")));
+            log.info("url:【{}】,req:【{}】", uri, JSON.toJSONString(pjd.getArgs()));
             // 执行目标方法
             result = pjd.proceed();
             //返回通知
             clock.stop();
         } catch (Throwable e) {
             //异常通知
-            e.printStackTrace();
-        }        //后置通知
-        if (!methodName.equalsIgnoreCase("initBinder")) {
-            long constTime = clock.getTime();
-            log.info("[" + className + "]" + "-" + "[" + methodName + "]" + " 花费时间：" + constTime + "ms");
-            if (constTime > 500) {
-                log.error("[" + className + "]" + "-" + "[" + methodName + "]" + " 花费时间过长，请检查: " + constTime + "ms");
+            log.warn("SysLogAspect: getLoginUser :{} ",e.getMessage());
+        } finally {
+            if (!methodName.equalsIgnoreCase("initBinder")) {
+                long constTime = clock.getTime();
+                log.info("[" + className + "]" + "-" + "[" + methodName + "]" + " 花费时间：" + constTime + "ms");
+                if (constTime > 500) {
+                    log.error("[" + className + "]" + "-" + "[" + methodName + "]" + " 花费时间过长，请检查: " + constTime + "ms");
+                }
             }
+            MDC.clear();
         }
         return result;
     }

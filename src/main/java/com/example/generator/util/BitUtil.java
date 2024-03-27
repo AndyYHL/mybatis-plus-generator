@@ -1,8 +1,15 @@
 package com.example.generator.util;
 
+import cn.hutool.core.util.ReflectUtil;
+import com.example.generator.pojo.domain.base.BaseEntity;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
+import java.util.stream.Stream;
 
 /**
  * <p>
@@ -123,10 +130,14 @@ public class BitUtil {
         /*UserDTO userDTO = new UserDTO();
         ReflectUtil.invoke(userDTO, "setUserId", "10");
         System.out.println(JSON.toJSONString(userDTO));*/
-        StringJoiner joiner = new StringJoiner(",", "(", ")");
+        /*StringJoiner joiner = new StringJoiner(",", "(", ")");
         for (int i = 0; i < 10; i++) {
             joiner.add("文字:" + i);
         }
-        System.out.println(joiner);
+        System.out.println(joiner);*/
+        Field[] fields = ReflectUtil.getFields(BaseEntity.class);
+        Stream<String> ignoreProperties = Arrays.stream(fields).toList().stream().map(Field::getName);
+        String [] dd = ignoreProperties.toArray(String[]::new);
+
     }
 }
