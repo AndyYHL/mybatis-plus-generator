@@ -4,12 +4,15 @@ import com.alibaba.fastjson2.JSON;
 import com.example.generator.pojo.dto.UserDTO;
 import com.example.generator.pojo.helper.LoginHelper;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.slf4j.MDC;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -28,21 +31,26 @@ import java.util.Objects;
 @Slf4j
 @Aspect
 @Component
+@SuppressWarnings(value = "all")
+@EnableAspectJAutoProxy
 public class SysLogAspect {
     /**
      * 切入点：表示在哪个类的哪个方法进行切入。配置有切入点表达式
      */
-    @Pointcut("execution(* com.example.generator.web.controller.*.*.*(..))")
+    //@Pointcut("@annotation(org.springframework.web.bind.annotation.GetMapping) || @annotation(org.springframework.web.bind.annotation.PostMapping)")
+    @Pointcut("execution (* com.example.generator.web.controller..*.*(..))")
     public void pointcutExpression() {
-        log.debug("配置切入点");
+        log.info("配置切入点");
     }
 
     /**
      * 1 前置通知     * @param joinPoint
      */
     @Before("pointcutExpression()")
-    public void beforeMethod(JoinPoint joinPoint) {
-        log.debug("前置通知执行了");
+    public void beforeMethod(@NotNull JoinPoint joinPoint) {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = Objects.requireNonNull(attributes).getRequest();
+        log.info("【请求时间】:{},【请求 URL】：{},【请求 IP】：{},【请求参数】：{}", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")), request.getRequestURL(), request.getRemoteAddr(), JSON.toJSONString(joinPoint.getArgs()));
     }
 
     /**
@@ -50,15 +58,18 @@ public class SysLogAspect {
      */
     @After("pointcutExpression()")
     public void afterMethod(JoinPoint joinPoint) {
-        log.debug("后置通知执行了，有异常也会执行");
+        log.warn("后置通知执行了，有异常也会执行");
     }
 
     /**
      * 3 返回通知     * 在方法法正常结束受执行的代码     * 返回通知是可以访问到方法的返回值的!     * @param joinPoint     * @param returnValue
      */
+    @SneakyThrows
     @AfterReturning(value = "pointcutExpression()", returning = "returnValue")
-    public void afterRunningMethod(JoinPoint joinPoint, Object returnValue) {
-        log.debug("返回通知执行，执行结果：" + returnValue);
+    public void afterRunningMethod(@NotNull JoinPoint joinPoint, Object returnValue) {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = Objects.requireNonNull(attributes).getRequest();
+        log.info("【返回时间】:{},【请求 URL】：{},【返回参数】：{}", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")), request.getRequestURL(), JSON.toJSONString(returnValue));
     }
 
     /**
@@ -66,13 +77,42 @@ public class SysLogAspect {
      */
     @AfterThrowing(value = "pointcutExpression()", throwing = "e")
     public void afterThrowingMethod(JoinPoint joinPoint, Exception e) {
-        log.debug("异常通知, 出现异常 " + e);
+        log.warn("异常通知, 出现异常 " + e);
     }
 
     /**
      * 环绕通知需要携带 ProceedingJoinPoint 类型的参数.      * 环绕通知类似于动态代理的全过程: ProceedingJoinPoint 类型的参数可以决定是否执行目标方法.     * 且环绕通知必须有返回值, 返回值即为目标方法的返回值
      */
     @Around("pointcutExpression()")
+    public Object aroundMethod(@NotNull ProceedingJoinPoint pjd) {
+        StopWatch clock = new StopWatch();
+        //返回的结果
+        Object result = null;
+        //方法名称
+        String className = pjd.getTarget().getClass().getName();
+        String methodName = pjd.getSignature().getName();
+        try {
+            // 计时开始
+            clock.start();
+            //前置通知
+            // 执行目标方法
+            result = pjd.proceed();
+            //返回通知
+            clock.stop();
+        } catch (Throwable e) {
+            //异常通知
+            log.warn("环绕异常通知, 出现异常 " + e);
+        }        //后置通知
+        if (!"initBinder".equalsIgnoreCase(methodName)) {
+            long constTime = clock.getTime();
+            log.info("[" + className + "]" + "-" + "[" + methodName + "]" + " 花费时间：" + constTime + "ms");
+            if (constTime > 500) {
+                log.error("[" + className + "]" + "-" + "[" + methodName + "]" + " 花费时间过长，请检查: " + constTime + "ms");
+            }
+        }
+        return result;
+    }
+    /*@Around("pointcutExpression()")
     public Object aroundMethod(ProceedingJoinPoint pjd) {
         StopWatch clock = new StopWatch();
         UserDTO userDTO = LoginHelper.getLoginUser();
@@ -109,5 +149,5 @@ public class SysLogAspect {
             MDC.clear();
         }
         return result;
-    }
+    }*/
 }

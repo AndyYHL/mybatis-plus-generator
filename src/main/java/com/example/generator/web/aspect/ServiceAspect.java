@@ -2,6 +2,7 @@ package com.example.generator.web.aspect;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.*;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Aspect
 @Component
+@SuppressWarnings(value = "all")
+@EnableAspectJAutoProxy
 public class ServiceAspect {
     /**
      * @annotation()：针对否个注解来定义切面，如下根据@GetMapping进行切面 比如：@GetMapping、@PostMapping、@DeleteMapping

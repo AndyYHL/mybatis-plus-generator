@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -23,6 +24,8 @@ import java.util.Objects;
 @Slf4j
 @Aspect
 @Component
+@SuppressWarnings(value = "all")
+@EnableAspectJAutoProxy
 public class AopAspect {
     /**
      * @annotation()：针对否个注解来定义切面，如下根据@GetMapping进行切面 比如：@GetMapping、@PostMapping、@DeleteMapping
