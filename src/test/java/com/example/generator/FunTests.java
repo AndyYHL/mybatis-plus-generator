@@ -82,6 +82,13 @@ public class FunTests {
         list.parallelStream().forEach(r -> System.out.println(function.apply(r)));
     }
 
+    /**
+     * 初始化UserDTO列表，通过提供的函数对每个UserDTO进行处理，并打印处理结果。
+     *
+     * @param list     用户DTO列表，将对这个列表中的每个元素进行处理。
+     * @param function 一个函数接口，用于对每个UserDTO对象进行处理并返回一个String结果。
+     *                 这个函数的具体逻辑由调用方提供，这里只是简单地将其应用到每个列表元素并打印结果。
+     */
     private static void initFunUserDTO(List<UserDTO> list, Function<UserDTO, String> function) {
         list.parallelStream().forEach(r -> System.out.println(function.apply(r)));
     }
