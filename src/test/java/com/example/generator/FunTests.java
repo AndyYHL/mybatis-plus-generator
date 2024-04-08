@@ -1,9 +1,15 @@
 package com.example.generator;
 
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.example.generator.pojo.dto.UserDTO;
+import com.google.common.collect.Maps;
 
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * <p>
@@ -32,6 +38,25 @@ public class FunTests {
         } catch (Exception e) {
             throw new RuntimeException("获取Lambda信息失败", e);
         }
+        System.out.println("================调用函数======================");
+        List<Map<String, String>> list = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Map<String, String> map = Maps.newHashMap();
+            map.put("k", "k-".concat(String.valueOf(i)));
+            map.put("j", "j-".concat(String.valueOf(i)));
+            map.put("h", "h-".concat(String.valueOf(i)));
+            list.add(map);
+        }
+        initFun(list, t -> t.get("j"));
+
+        List<UserDTO> userDTOList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setUserName("userName-".concat(String.valueOf(i)));
+            userDTO.setUserId("userId-".concat(String.valueOf(i)));
+            userDTOList.add(userDTO);
+        }
+        initFunUserDTO(userDTOList, UserDTO::getUserName);
         System.out.println("======================================");
     }
 
@@ -45,5 +70,19 @@ public class FunTests {
         System.out.println("implMethodSignature: " + serializedLambda.getImplMethodSignature());
         System.out.println("instantiatedMethodType: " + serializedLambda.getInstantiatedMethodType());
         System.out.println("implMethodKind: " + serializedLambda.getImplMethodKind());
+    }
+
+    /**
+     * 函数传参
+     *
+     * @param list     原始数据
+     * @param function 需要获取的函数
+     */
+    private static void initFun(List<Map<String, String>> list, Function<Map<String, String>, String> function) {
+        list.parallelStream().forEach(r -> System.out.println(function.apply(r)));
+    }
+
+    private static void initFunUserDTO(List<UserDTO> list, Function<UserDTO, String> function) {
+        list.parallelStream().forEach(r -> System.out.println(function.apply(r)));
     }
 }
