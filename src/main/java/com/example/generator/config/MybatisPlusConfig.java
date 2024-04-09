@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import com.example.generator.web.interceptor.EscapeLikeSqlInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +35,7 @@ public class MybatisPlusConfig implements MetaObjectHandler {
         interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
         // 防止全表更新
         // interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
+        interceptor.addInnerInterceptor(new EscapeLikeSqlInterceptor());
         return interceptor;
     }
 
