@@ -37,7 +37,7 @@ import java.util.Optional;
 public class MySQLCodeGenerator {
 
     // 数据库连接配置
-    private static final String JDBC_URL = "jdbc:mysql://192.168.70.23:3306/toyou_cashier?serverTimezone=Hongkong&allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false";
+    private static final String JDBC_URL = "jdbc:mysql://192.168.70.23:3306/cross_merchant?serverTimezone=Hongkong&allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false";
     private static final String JDBC_USER_NAME = "toyou";
     private static final String JDBC_PASSWORD = "Toyou_123";
 
