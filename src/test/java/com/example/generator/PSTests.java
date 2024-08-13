@@ -1,5 +1,12 @@
 package com.example.generator;
 
+import com.baomidou.mybatisplus.generator.FastAutoGenerator;
+import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * <p>
  * PSTests描述:
@@ -13,13 +20,46 @@ package com.example.generator;
  * @date 2024年04月15日 10:59
  */
 public class PSTests {
+    private static final String JDBC_URL = "jdbc:mysql://192.168.70.23:3306/cross_order?serverTimezone=Hongkong&allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false";
+    private static final String JDBC_USER_NAME = "toyou";
+    private static final String JDBC_PASSWORD = "Toyou_123";
+
     public static void main(String[] args) {
-        // 打印九九乘法表
-        for (int i = 1; i <= 9; i++) {
-            for (int j = 1; j <= i; j++) {
-                System.out.print(i + "X" + j + "= " + i * j + "\t");
-            }
-            System.out.println();
-        }
+        String path = System.getProperty("user.dir");
+        String finalPath = "D:\\jjjj";
+        FastAutoGenerator.create(JDBC_URL, JDBC_USER_NAME, JDBC_PASSWORD)
+                .globalConfig((scanner, builder) -> builder
+                        .author(scanner.apply("请输入作者名称？"))
+                        .outputDir(finalPath + "/src/main/java")
+                        .enableSpringdoc()
+                        .commentDate("yyyy-MM-dd")
+                )
+                .packageConfig((scanner, builder) -> builder
+                        .parent(scanner.apply("请输入父包名？com.example"))
+                        //父包模块名
+                        .moduleName(scanner.apply("请输入模块名？generator"))
+                        .entity("entity")
+                        .mapper("mapper")
+                        .service("service")
+                        .serviceImpl("service.impl")
+                        .xml("mapper.xml")
+                )
+                .strategyConfig((scanner, builder) -> builder
+                        .addInclude(getTables(scanner.apply("请输入要生成的表名，多个英文逗号分隔？所有输入 all")))
+                        .entityBuilder()
+                        .enableLombok()
+                )
+                .templateEngine(new FreemarkerTemplateEngine())
+                .execute();
+    }
+
+    /**
+     * 处理 all 情况
+     *
+     * @param tables
+     * @return
+     */
+    protected static List<String> getTables(String tables) {
+        return "all".equals(tables) ? Collections.emptyList() : Arrays.asList(tables.split(","));
     }
 }
