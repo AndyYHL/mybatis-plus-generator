@@ -1,15 +1,12 @@
 package com.example.generator.util;
 
-import cn.hutool.core.util.ReflectUtil;
-import com.example.generator.pojo.domain.base.BaseEntity;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
-import java.util.stream.Stream;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * <p>
@@ -135,9 +132,26 @@ public class BitUtil {
             joiner.add("文字:" + i);
         }
         System.out.println(joiner);*/
-        Field[] fields = ReflectUtil.getFields(BaseEntity.class);
+        /*Field[] fields = ReflectUtil.getFields(BaseEntity.class);
         Stream<String> ignoreProperties = Arrays.stream(fields).toList().stream().map(Field::getName);
-        String [] dd = ignoreProperties.toArray(String[]::new);
+        String [] dd = ignoreProperties.toArray(String[]::new);*/
 
+        /*LocalDateTime minTime = LocalDateTime.now();
+        LocalDateTime maxTime = LocalDateTime.of(LocalDate.from(minTime.plusDays(1)), LocalDateTime.MAX.toLocalTime());
+        Duration duration = Duration.between(minTime,maxTime);
+        System.out.println(duration.getSeconds());*/
+
+        /*DayOfWeek dayOfWeek = LocalDateTime.now().getDayOfWeek();
+        // 周一
+        LocalDate monday = LocalDate.parse(LocalDateTime.now().minusDays(dayOfWeek.getValue() - 1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        // 周日
+        LocalDate sunday = LocalDate.parse(monday.plusDays(7).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        for (LocalDate date = monday; date.isBefore(sunday); date = date.plusDays(1)) {
+            System.out.println(date);
+        }*/
+        LocalDate startDate = LocalDate.parse("2025-09".concat("-01"));
+        LocalDateTime startOfMonth = startDate.atTime(LocalTime.MIN);
+        LocalDateTime endOfMonth = startDate.plusMonths(1).minusDays(1).atTime(LocalTime.MAX);
+        System.out.println(startOfMonth.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))+"------"+endOfMonth.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 }

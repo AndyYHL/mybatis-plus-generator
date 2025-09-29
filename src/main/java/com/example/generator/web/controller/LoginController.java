@@ -27,8 +27,8 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 /**
  * LoginController描述
@@ -51,6 +51,7 @@ public class LoginController implements ILoginApi {
             UserDTO userDTO = new UserDTO();
             userDTO.setUserId("10001");
             userDTO.setUserName("admin");
+            userDTO.setUserType(1);
             LoginHelper.login(userDTO, userDTO::getUserId);
             String token = LoginHelper.getToken();
             return ApiResponse.success("登录成功".concat(token));

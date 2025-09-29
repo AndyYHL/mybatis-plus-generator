@@ -18,4 +18,8 @@ public class UserDTO {
      * 用户名
      */
     private String userName;
+    /**
+     * 用户类型
+     */
+    private Integer userType;
 }

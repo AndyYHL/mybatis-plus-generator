@@ -21,6 +21,7 @@ public enum BasicRespCode {
     NO_AUTH("100006", "用户未授权"),
     NO_DATA("100007", "未查询数据"),
     AUTH_FAIL("100008", "认证失败"),
+    TOO_MANY_REQUESTS ("100009", "请求过于频繁，请稍后重试"),
     PERMISSION_FAIL("200008", "无访问权限"),
     LOGIN_ERROR("200001", "登录失败，请检查用户名密码"),
     DUPLICATE_KEY("300001", "重复关键字,数据插入失败！"),

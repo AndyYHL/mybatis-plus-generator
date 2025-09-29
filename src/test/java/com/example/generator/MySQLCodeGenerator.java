@@ -4,6 +4,7 @@ import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
@@ -134,10 +135,26 @@ public class MySQLCodeGenerator {
         basics(fastAutoGenerator);
         System.out.println("end 生成基础配置");
 
+        /*System.out.println("start 生成DO");
+        // 生成扩展配置
+        extend(fastAutoGenerator);
+        System.out.println("end 生成DO");
+
+        System.out.println("start 生成DTO");
+        // 生成扩展配置
+        extendDTO(fastAutoGenerator);
+        System.out.println("end 生成DTO");
+
+        System.out.println("start 生成VO");
+        // 生成扩展配置
+        extendVO(fastAutoGenerator);
+        System.out.println("end 生成VO");*/
         System.out.println("新版本生成 开始");
         expandDO(dataSourceConfigBuilder, finalPath, fastAutoGenerator);
         expandDTO(dataSourceConfigBuilder, finalPath, fastAutoGenerator);
         expandVO(dataSourceConfigBuilder, finalPath, fastAutoGenerator);
+        expandReq(dataSourceConfigBuilder, finalPath, fastAutoGenerator);
+        expandResp(dataSourceConfigBuilder, finalPath, fastAutoGenerator);
         System.out.println("新版本生成 结束");
     }
 
@@ -155,7 +172,7 @@ public class MySQLCodeGenerator {
         fastAutoGenerator.strategyConfig((scanner, strategyConfigBuilder) -> {
             strategyConfigBuilder.entityBuilder().enableLombok()
                     // 继承的类
-                    .superClass(BOOL_SUPER ? com.example.generator.pojo.domain.base.BaseEntity.class : Object.class)
+                    .superClass(com.example.generator.pojo.domain.base.BaseEntity.class)
                     //不实现 Serializable 接口，不生产 SerialVersionUID
                     .disableSerialVersionUID()
                     // 乐观锁实体类名称
@@ -204,7 +221,7 @@ public class MySQLCodeGenerator {
         // 格式化 mapper文件名,格式化xml实现类文件名称
         fastAutoGenerator.strategyConfig(strategyConfigBuilder ->
                         strategyConfigBuilder.mapperBuilder()
-                                //.superClass(BaseMapper.class)
+                                .superClass(BaseMapper.class)
                                 .mapperAnnotation(Mapper.class)
                                 //生成通用的resultMap
                                 .enableBaseResultMap()
@@ -230,6 +247,126 @@ public class MySQLCodeGenerator {
             templateConfigBuilder.xml("/templates/mapper.xml");
             //设置 controller 模板路径
             templateConfigBuilder.controller("/templates/controller.java");
+        });
+        // 7.生成代码
+        fastAutoGenerator.execute();
+    }
+
+    /**
+     * 生成扩展配置
+     *
+     * @param fastAutoGenerator
+     */
+    protected static void extend(FastAutoGenerator fastAutoGenerator) {
+        // 6.1.Entity策略配置
+        // 生成实体时生成字段的注解，包括@TableId注解等
+        // 数据库表和字段映射到实体的命名策略，为下划线转驼峰
+        // 全局主键类型为None
+        // 实体名称格式化为XXXEntity
+        fastAutoGenerator.strategyConfig((scanner, strategyConfigBuilder) -> {
+            strategyConfigBuilder.entityBuilder().enableLombok()
+                    // 继承的类
+                    .superClass(com.example.generator.pojo.domain.base.BaseEntity.class)
+                    //不实现 Serializable 接口，不生产 SerialVersionUID
+                    .disableSerialVersionUID()
+                    // 乐观锁实体类名称
+                    .versionPropertyName(Optional.ofNullable(scanner.apply("请输入字段中的乐观锁名称？")).filter(StringUtils::isNotBlank).orElse("version"))
+                    .logicDeletePropertyName(Optional.ofNullable(scanner.apply("请输入数据库中的逻辑删除字段入实体名称")).filter(StringUtils::isNotBlank).orElse("deleted"))
+                    //数据库表映射到实体的命名策略：下划线转驼峰命
+                    .naming(NamingStrategy.underline_to_camel)
+                    //数据库表字段映射到实体的命名策略：下划线转驼峰命hh
+                    .columnNaming(NamingStrategy.underline_to_camel).idType(IdType.AUTO)
+                    //开启生成实体时生成字段注解
+                    .enableTableFieldAnnotation()
+                    .formatFileName("%s")
+                    //.convertFileName(fromFileName -> fromFileName + "DO")
+                    //添加表字段填充，"create_time"字段自动填充为插入时间，"modify_time"字段自动填充为插入修改时间
+                    .addTableFills(
+                            new Column("create_time", FieldFill.INSERT),
+                            new Column("update_time", FieldFill.INSERT_UPDATE)
+                    ).enableFileOverride();
+        });
+
+        // 6.6 扩展类型生成
+        fastAutoGenerator.injectionConfig((scanner, consumer) -> {
+            String hasGenerate = scanner.apply("是否生成DO");
+            if (hasGenerate.equals("是")) {
+                consumer.customFile(new CustomFile.Builder().fileName("DO.java").templatePath("/templates/entityDO.java.ftl").packageName("pojo.do").enableFileOverride().build())
+                        .build();
+            }
+        });
+        // 7.生成代码
+        fastAutoGenerator.execute();
+    }
+
+    /**
+     * 生成DTO
+     */
+    protected static void extendDTO(FastAutoGenerator fastAutoGenerator) {
+        // 6.1.Entity策略配置
+        // 生成实体时生成字段的注解，包括@TableId注解等
+        // 数据库表和字段映射到实体的命名策略，为下划线转驼峰
+        // 全局主键类型为None
+        fastAutoGenerator.packageConfig(c -> c.entity("pojo.dto"));
+        // 实体名称格式化为XXXEntity
+        fastAutoGenerator.strategyConfig((scanner, strategyConfigBuilder) -> {
+            strategyConfigBuilder.entityBuilder().enableLombok()
+                    .superClass(com.example.generator.pojo.dto.base.BaseEntity.class)
+                    //不实现 Serializable 接口，不生产 SerialVersionUID
+                    .disableSerialVersionUID()
+                    //数据库表映射到实体的命名策略：下划线转驼峰命
+                    .naming(NamingStrategy.underline_to_camel)
+                    //数据库表字段映射到实体的命名策略：下划线转驼峰命hh
+                    .columnNaming(NamingStrategy.underline_to_camel).idType(IdType.AUTO)
+                    //开启生成实体时生成字段注解
+                    .enableTableFieldAnnotation()
+                    .formatFileName("%s")
+                    .enableFileOverride();
+        });
+
+        // 6.6 扩展类型生成
+        fastAutoGenerator.injectionConfig((scanner, consumer) -> {
+            String hasGenerate = scanner.apply("是否生成DTO");
+            if (hasGenerate.equals("是")) {
+                consumer.customFile(new CustomFile.Builder().fileName("DTO.java").templatePath("/templates/entityDTO.java.ftl").packageName("pojo.dto").enableFileOverride().build())
+                        .build();
+            }
+        });
+        // 7.生成代码
+        fastAutoGenerator.execute();
+    }
+
+    /**
+     * 生成VO
+     */
+    protected static void extendVO(FastAutoGenerator fastAutoGenerator) {
+        // 6.1.Entity策略配置
+        // 生成实体时生成字段的注解，包括@TableId注解等
+        // 数据库表和字段映射到实体的命名策略，为下划线转驼峰
+        // 全局主键类型为None
+        fastAutoGenerator.packageConfig(c -> c.entity("pojo.vo"));
+        // 实体名称格式化为XXXEntity
+        fastAutoGenerator.strategyConfig((scanner, strategyConfigBuilder) -> {
+            strategyConfigBuilder.entityBuilder().enableLombok()
+                    .superClass("")
+                    //不实现 Serializable 接口，不生产 SerialVersionUID
+                    .disableSerialVersionUID()
+                    //数据库表映射到实体的命名策略：下划线转驼峰命
+                    .naming(NamingStrategy.underline_to_camel)
+                    //数据库表字段映射到实体的命名策略：下划线转驼峰命hh
+                    .columnNaming(NamingStrategy.underline_to_camel).idType(IdType.AUTO)
+                    //开启生成实体时生成字段注解
+                    .enableTableFieldAnnotation()
+                    .formatFileName("%s")
+                    .enableFileOverride();
+        });
+        // 6.6 扩展类型生成
+        fastAutoGenerator.injectionConfig((scanner, consumer) -> {
+            String hasGenerate = scanner.apply("是否生成VO");
+            if (hasGenerate.equals("是")) {
+                consumer.customFile(new CustomFile.Builder().fileName("VO.java").templatePath("/templates/entityVO.java.ftl").packageName("pojo.vo").enableFileOverride().build())
+                        .build();
+            }
         });
         // 7.生成代码
         fastAutoGenerator.execute();
@@ -313,7 +450,7 @@ public class MySQLCodeGenerator {
 
                 strategyConfigBuilder.entityBuilder().enableLombok()
                         // 继承的类
-                        .superClass(BOOL_SUPER ? com.example.generator.pojo.domain.base.BaseEntity.class : Object.class)
+                        .superClass(com.example.generator.pojo.domain.base.BaseEntity.class)
                         //不实现 Serializable 接口，不生产 SerialVersionUID
                         .disableSerialVersionUID()
                         // 乐观锁实体类名称
@@ -422,7 +559,7 @@ public class MySQLCodeGenerator {
                         .addTablePrefix(strategyConfig.getTablePrefix().stream().toList());
 
                 strategyConfigBuilder.entityBuilder().enableLombok()
-                        .superClass(BOOL_SUPER ? com.example.generator.pojo.dto.base.BaseEntity.class : Object.class)
+                        .superClass(com.example.generator.pojo.dto.base.BaseEntity.class)
                         //不实现 Serializable 接口，不生产 SerialVersionUID
                         .disableSerialVersionUID()
                         //数据库表映射到实体的命名策略：下划线转驼峰命
@@ -534,6 +671,214 @@ public class MySQLCodeGenerator {
                         //开启生成实体时生成字段注解
                         .enableTableFieldAnnotation()
                         .formatFileName("%sVO")
+                        .enableFileOverride();
+            });
+        });
+
+        // 6.5 模板配置
+        fastAutoGenerator.templateConfig(templateConfigBuilder -> {
+            //实体类使用我们自定义模板- 禁用模板
+            templateConfigBuilder.disable(TemplateType.ENTITY);
+            //设置实体模板路径(JAVA)
+            templateConfigBuilder.entity("/templates/entityVO.java");
+            //设置 service 模板路径
+            templateConfigBuilder.service("");
+            //设置 serviceImpl 模板路径
+            templateConfigBuilder.serviceImpl("");
+            //设置 mapper 模板路径
+            templateConfigBuilder.mapper("");
+            //设置 mapperXml 模板路径
+            templateConfigBuilder.xml("");
+            //设置 controller 模板路径
+            templateConfigBuilder.controller("");
+        });
+
+        // 7.生成代码
+        fastAutoGenerator.execute();
+    }
+
+    protected static void expandReq(DataSourceConfig.Builder builder, String finalPath, FastAutoGenerator oldFastAutoGenerator) {
+        // 1.1.快速生成器
+        FastAutoGenerator fastAutoGenerator = FastAutoGenerator.create(builder);
+        // 2.全局配置
+        // 覆盖已生成文件
+        // 不打开生成文件目录
+        // 指定输出目录,注意使用反斜杠
+        // 设置注释的作者
+        // 设置注释的日期格式
+        oldFastAutoGenerator.globalConfig(r -> {
+            GlobalConfig globalConfig = r.build();
+            // 使用java8新的时间类型
+            fastAutoGenerator.globalConfig((scanner, globalConfigBuilder) -> {
+                //作者名
+                globalConfigBuilder.author(globalConfig.getAuthor())
+                        //输出路径(写到java目录)
+                        .outputDir(finalPath + "\\src\\main\\java")
+                        //开启 kotlin 模式 默认值:false
+                        // .enableKotlin()
+                        //开启swagger 默认值:false
+                        //.enableSwagger()
+                        .enableSpringdoc()
+                        // 禁止打开输出目录
+                        .disableOpenDir()
+                        //时间策略 DateType.ONLY_DATE 默认值: DateType.TIME_PACK
+                        .dateType(DateType.TIME_PACK)
+                        //注释日期
+                        .commentDate("yyyy-MM-dd");
+            });
+        });
+
+        // 3.包配置
+        // 设置父包名
+        // 设置父包模块名
+        // 设置MVC下各个模块的包名
+        // 设置XML资源文件的目录
+        oldFastAutoGenerator.packageConfig(r -> {
+            PackageConfig packageConfig = r.build();
+            fastAutoGenerator.packageConfig((scanner, packageConfigBuilder) -> {
+                // System.out.println(packageConfig.getParent());
+                // 父包名
+                packageConfigBuilder.parent(packageConfig.getParent())
+                        //Entity 包名
+                        .entity("pojo.req");
+            });
+        });
+
+        // 4.模板配置
+        // 使用Freemarker引擎模板，默认的是Velocity引擎模板
+        AbstractTemplateEngine templateEngine = new FreemarkerTemplateEngine();
+        fastAutoGenerator.templateEngine(templateEngine);
+        // 5.注入配置 TODO
+        Field[] fields = ReflectUtil.getFields(com.example.generator.pojo.domain.base.BaseEntity.class);
+        List<String> ignoreField = Arrays.stream(fields).toList().stream().map(r -> StrUtil.toUnderlineCase(r.getName())).toList();
+        // 6.策略配置
+        // 设置需要生成的表名
+        // 设置过滤表前缀
+        oldFastAutoGenerator.strategyConfig(r -> {
+            StrategyConfig strategyConfig = r.build();
+            fastAutoGenerator.strategyConfig((scanner, strategyConfigBuilder) -> {
+                strategyConfigBuilder.enableCapitalMode()
+                        .enableSkipView()
+                        .disableSqlFilter()
+                        .addInclude(strategyConfig.getInclude().stream().toList())
+                        .addTablePrefix(strategyConfig.getTablePrefix().stream().toList());
+
+                strategyConfigBuilder.entityBuilder().enableLombok()
+                        .superClass("")
+                        .addIgnoreColumns(ignoreField)
+                        //不实现 Serializable 接口，不生产 SerialVersionUID
+                        .disableSerialVersionUID()
+                        //数据库表映射到实体的命名策略：下划线转驼峰命
+                        .naming(NamingStrategy.underline_to_camel)
+                        //数据库表字段映射到实体的命名策略：下划线转驼峰命hh
+                        .columnNaming(NamingStrategy.underline_to_camel).idType(IdType.AUTO)
+                        //开启生成实体时生成字段注解
+                        .enableTableFieldAnnotation()
+                        .formatFileName("%sReq")
+                        .enableFileOverride();
+            });
+        });
+
+        // 6.5 模板配置
+        fastAutoGenerator.templateConfig(templateConfigBuilder -> {
+            //实体类使用我们自定义模板- 禁用模板
+            templateConfigBuilder.disable(TemplateType.ENTITY);
+            //设置实体模板路径(JAVA)
+            templateConfigBuilder.entity("/templates/entityVO.java");
+            //设置 service 模板路径
+            templateConfigBuilder.service("");
+            //设置 serviceImpl 模板路径
+            templateConfigBuilder.serviceImpl("");
+            //设置 mapper 模板路径
+            templateConfigBuilder.mapper("");
+            //设置 mapperXml 模板路径
+            templateConfigBuilder.xml("");
+            //设置 controller 模板路径
+            templateConfigBuilder.controller("");
+        });
+
+        // 7.生成代码
+        fastAutoGenerator.execute();
+    }
+
+    protected static void expandResp(DataSourceConfig.Builder builder, String finalPath, FastAutoGenerator oldFastAutoGenerator) {
+        // 1.1.快速生成器
+        FastAutoGenerator fastAutoGenerator = FastAutoGenerator.create(builder);
+        // 2.全局配置
+        // 覆盖已生成文件
+        // 不打开生成文件目录
+        // 指定输出目录,注意使用反斜杠
+        // 设置注释的作者
+        // 设置注释的日期格式
+        oldFastAutoGenerator.globalConfig(r -> {
+            GlobalConfig globalConfig = r.build();
+            // 使用java8新的时间类型
+            fastAutoGenerator.globalConfig((scanner, globalConfigBuilder) -> {
+                //作者名
+                globalConfigBuilder.author(globalConfig.getAuthor())
+                        //输出路径(写到java目录)
+                        .outputDir(finalPath + "\\src\\main\\java")
+                        //开启 kotlin 模式 默认值:false
+                        // .enableKotlin()
+                        //开启swagger 默认值:false
+                        //.enableSwagger()
+                        .enableSpringdoc()
+                        // 禁止打开输出目录
+                        .disableOpenDir()
+                        //时间策略 DateType.ONLY_DATE 默认值: DateType.TIME_PACK
+                        .dateType(DateType.TIME_PACK)
+                        //注释日期
+                        .commentDate("yyyy-MM-dd");
+            });
+        });
+
+        // 3.包配置
+        // 设置父包名
+        // 设置父包模块名
+        // 设置MVC下各个模块的包名
+        // 设置XML资源文件的目录
+        oldFastAutoGenerator.packageConfig(r -> {
+            PackageConfig packageConfig = r.build();
+            fastAutoGenerator.packageConfig((scanner, packageConfigBuilder) -> {
+                // System.out.println(packageConfig.getParent());
+                // 父包名
+                packageConfigBuilder.parent(packageConfig.getParent())
+                        //Entity 包名
+                        .entity("pojo.resp");
+            });
+        });
+
+        // 4.模板配置
+        // 使用Freemarker引擎模板，默认的是Velocity引擎模板
+        AbstractTemplateEngine templateEngine = new FreemarkerTemplateEngine();
+        fastAutoGenerator.templateEngine(templateEngine);
+        // 5.注入配置 TODO
+        Field[] fields = ReflectUtil.getFields(com.example.generator.pojo.domain.base.BaseEntity.class);
+        List<String> ignoreField = Arrays.stream(fields).toList().stream().map(r -> StrUtil.toUnderlineCase(r.getName())).toList();
+        // 6.策略配置
+        // 设置需要生成的表名
+        // 设置过滤表前缀
+        oldFastAutoGenerator.strategyConfig(r -> {
+            StrategyConfig strategyConfig = r.build();
+            fastAutoGenerator.strategyConfig((scanner, strategyConfigBuilder) -> {
+                strategyConfigBuilder.enableCapitalMode()
+                        .enableSkipView()
+                        .disableSqlFilter()
+                        .addInclude(strategyConfig.getInclude().stream().toList())
+                        .addTablePrefix(strategyConfig.getTablePrefix().stream().toList());
+
+                strategyConfigBuilder.entityBuilder().enableLombok()
+                        .superClass("")
+                        .addIgnoreColumns(ignoreField)
+                        //不实现 Serializable 接口，不生产 SerialVersionUID
+                        .disableSerialVersionUID()
+                        //数据库表映射到实体的命名策略：下划线转驼峰命
+                        .naming(NamingStrategy.underline_to_camel)
+                        //数据库表字段映射到实体的命名策略：下划线转驼峰命hh
+                        .columnNaming(NamingStrategy.underline_to_camel).idType(IdType.AUTO)
+                        //开启生成实体时生成字段注解
+                        .enableTableFieldAnnotation()
+                        .formatFileName("%sResp")
                         .enableFileOverride();
             });
         });
