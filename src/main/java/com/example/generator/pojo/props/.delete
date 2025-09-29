@@ -1,4 +1,0 @@
-数据处理类，记录与配置文件相关的类数据获取
-
-@Value("spring.application.name")
-private String name;
