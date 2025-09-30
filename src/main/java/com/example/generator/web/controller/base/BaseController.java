@@ -1,6 +1,8 @@
 package com.example.generator.web.controller.base;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -64,7 +66,7 @@ public abstract class BaseController<VO, REQ, DO extends BaseEntity> implements 
     public ApiResponse<List<VO>> selectList(ApiRequest<REQ> req) {
         REQ reqParam = req.getParam();
         QueryWrapper<DO> queryWrapper = this.getQueryWrapper(reqParam);
-        queryWrapper.lambda().orderByDesc(BaseEntity::getId);
+        queryWrapper.orderByDesc(this.getTableIdColumnName(clazzDO));
         List<DO> doClassList = this.getService().list(queryWrapper);
         return ApiResponse.success(JSON.parseArray(JSON.toJSONString(doClassList), clazzVO));
     }
@@ -73,9 +75,9 @@ public abstract class BaseController<VO, REQ, DO extends BaseEntity> implements 
     public ApiPageResponse<VO> selectPageList(ApiPageRequest<REQ> req) {
         REQ reqParam = req.getParam();
         QueryWrapper<DO> queryWrapper = this.getQueryWrapper(reqParam);
-        queryWrapper.lambda().orderByDesc(BaseEntity::getId);
+        queryWrapper.orderByDesc(this.getTableIdColumnName(clazzDO));
         IPage<DO> doClassList = this.getService().page(new Page<>(req.getCurrentPage(), req.getPageSize()), queryWrapper);
-        return ApiPageResponse.success(JSON.parseArray(JSON.toJSONString(doClassList), clazzVO));
+        return ApiPageResponse.success(doClassList, clazzVO);
     }
 
     @Override
@@ -101,11 +103,54 @@ public abstract class BaseController<VO, REQ, DO extends BaseEntity> implements 
                 // 设置为可访问
                 field.setAccessible(true);
                 String value = field.get(reqParam).toString();
-                queryWrapper.eq(StringUtils.isNotBlank(value), field.getName(), value);
+                queryWrapper.eq(StringUtils.isNotBlank(value), StrUtil.toUnderlineCase(field.getName()), value);
             } catch (IllegalAccessException e) {
                 throw new BasicException(BasicRespCode.FAIL.getCode(), "无法访问字段：" + field.getName() + "[" + e.getMessage() + "]");
             }
         }
         return queryWrapper;
+    }
+
+    /**
+     * 获取类的主键
+     *
+     * @return
+     */
+    private String getTableId() {
+        String columnName = "", fieldName = "";
+        // 通过反射获取@TableId注解
+        Field[] fields = BaseEntity.class.getDeclaredFields();
+        for (Field field : fields) {
+            TableId tableId = field.getAnnotation(TableId.class);
+            if (tableId != null) {
+                columnName = tableId.value(); // 获取到"id"
+                fieldName = field.getName();   // 获取到"id"
+                break;
+            }
+        }
+        return columnName;
+    }
+
+    /**
+     * 获取表的主键列名
+     *
+     * @param clazz DO实体类
+     * @return 主键列名
+     */
+    private String getTableIdColumnName(Class<?> clazz) {
+        // 遍历类及其父类
+        Class<?> currentClass = clazz;
+        while (currentClass != null) {
+            Field[] fields = currentClass.getDeclaredFields();
+            for (Field field : fields) {
+                TableId tableId = field.getAnnotation(TableId.class);
+                if (tableId != null) {
+                    // return tableId.value();
+                    return StrUtil.toUnderlineCase(field.getName());
+                }
+            }
+            currentClass = currentClass.getSuperclass();
+        }
+        return "id";
     }
 }
