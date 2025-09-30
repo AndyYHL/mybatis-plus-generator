@@ -1,5 +1,6 @@
 package com.example.generator.pojo.dto;
 
+import com.example.generator.pojo.dto.base.BaseEntityDTO;
 import lombok.Data;
 
 /**
@@ -9,7 +10,7 @@ import lombok.Data;
  * @date 2023-10-18
  **/
 @Data
-public class UserDTO {
+public class UserDTO extends BaseEntityDTO {
     /**
      * 用户ID
      */

@@ -132,7 +132,7 @@ public class BitUtil {
             joiner.add("文字:" + i);
         }
         System.out.println(joiner);*/
-        /*Field[] fields = ReflectUtil.getFields(BaseEntity.class);
+        /*Field[] fields = ReflectUtil.getFields(BaseEntityDTO.class);
         Stream<String> ignoreProperties = Arrays.stream(fields).toList().stream().map(Field::getName);
         String [] dd = ignoreProperties.toArray(String[]::new);*/
 

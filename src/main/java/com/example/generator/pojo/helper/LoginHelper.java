@@ -101,7 +101,7 @@ public class LoginHelper {
      */
     @SuppressWarnings(value = "all")
     public static <T> T getTokenUser(String token) {
-        T loginUser = (T) StpUtil.getTokenSession().getTokenSign(token);
+        T loginUser = (T) StpUtil.getTokenSession().get(token);
         if (loginUser != null)
             SaHolder.getStorage().set(LOGIN_USER_KEY, loginUser);
         return loginUser;

@@ -18,6 +18,7 @@ import com.baomidou.mybatisplus.generator.engine.AbstractTemplateEngine;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 import com.baomidou.mybatisplus.generator.fill.Column;
 import com.baomidou.mybatisplus.generator.keywords.MySqlKeyWordsHandler;
+import com.example.generator.pojo.dto.base.BaseEntityDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.junit.platform.commons.util.StringUtils;
 
@@ -311,7 +312,7 @@ public class MySQLCodeGenerator {
         // 实体名称格式化为XXXEntity
         fastAutoGenerator.strategyConfig((scanner, strategyConfigBuilder) -> {
             strategyConfigBuilder.entityBuilder().enableLombok()
-                    .superClass(com.example.generator.pojo.dto.base.BaseEntity.class)
+                    .superClass(BaseEntityDTO.class)
                     //不实现 Serializable 接口，不生产 SerialVersionUID
                     .disableSerialVersionUID()
                     //数据库表映射到实体的命名策略：下划线转驼峰命
@@ -559,7 +560,7 @@ public class MySQLCodeGenerator {
                         .addTablePrefix(strategyConfig.getTablePrefix().stream().toList());
 
                 strategyConfigBuilder.entityBuilder().enableLombok()
-                        .superClass(com.example.generator.pojo.dto.base.BaseEntity.class)
+                        .superClass(BaseEntityDTO.class)
                         //不实现 Serializable 接口，不生产 SerialVersionUID
                         .disableSerialVersionUID()
                         //数据库表映射到实体的命名策略：下划线转驼峰命

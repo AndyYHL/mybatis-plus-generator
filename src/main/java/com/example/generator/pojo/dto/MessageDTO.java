@@ -1,5 +1,6 @@
 package com.example.generator.pojo.dto;
 
+import com.example.generator.pojo.dto.base.BaseEntityDTO;
 import lombok.Data;
 
 /**
@@ -9,7 +10,7 @@ import lombok.Data;
  * @date 2023-10-25
  **/
 @Data
-public class MessageDTO {
+public class MessageDTO extends BaseEntityDTO {
     /**
      * 消息标题
      */

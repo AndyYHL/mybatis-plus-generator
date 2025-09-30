@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * BaseEntity
+ * BaseEntityDTO
  * </p>
  *
  * @author jdd

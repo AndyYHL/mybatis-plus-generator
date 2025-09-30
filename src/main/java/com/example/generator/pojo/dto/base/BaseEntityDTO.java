@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * BaseEntity
+ * BaseEntityDTO
  * </p>
  *
  * @author jdd
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
-public class BaseEntity implements Serializable {
+public class BaseEntityDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
     /**
