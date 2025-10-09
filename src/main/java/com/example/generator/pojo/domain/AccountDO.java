@@ -1,6 +1,7 @@
 package com.example.generator.pojo.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.example.generator.pojo.annotation.BusinessId;
 import com.example.generator.pojo.domain.base.BaseEntity;
 import lombok.Data;
 
@@ -22,6 +23,7 @@ public class AccountDO extends BaseEntity {
     /**
      * 账户编号
      */
+    @BusinessId
     private String accountNo;
     /**
      * 账户名称

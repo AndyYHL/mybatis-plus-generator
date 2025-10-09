@@ -28,6 +28,10 @@ public interface CommonApiCode {
      */
     String UPDATE_STATUS = "updateStatus";
     /**
+     * 删除
+     */
+    String DELETE = "delete";
+    /**
      * URL 地址
      */
     String BASE_URL = "common/";

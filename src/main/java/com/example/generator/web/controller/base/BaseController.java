@@ -1,12 +1,15 @@
 package com.example.generator.web.controller.base;
 
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.generator.pojo.annotation.BusinessId;
 import com.example.generator.pojo.container.ApiPageRequest;
 import com.example.generator.pojo.container.ApiPageResponse;
 import com.example.generator.pojo.container.ApiRequest;
@@ -16,11 +19,13 @@ import com.example.generator.pojo.enums.BasicRespCode;
 import com.example.generator.pojo.exception.BasicException;
 import com.example.generator.web.api.common.IBaseApi;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -54,9 +59,22 @@ public abstract class BaseController<VO, REQ, DO extends BaseEntity> implements 
     @Override
     public ApiResponse<VO> saveOrUpdate(ApiRequest<REQ> req) {
         DO doClass = JSON.parseObject(JSON.toJSONString(req.getParam()), clazzDO);
-        boolean result = this.getService().saveOrUpdate(doClass);
-        if (!result) {
-            return ApiResponse.fail("保存失败！");
+        boolean result;
+        Pair<String, Object> businessIdAndValue = this.getBusinessIdAndValue(doClass);
+        if (Objects.nonNull(businessIdAndValue) && StringUtils.isNotBlank(businessIdAndValue.getValue().toString())) {
+            // 进行更新
+            UpdateWrapper<DO> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq(businessIdAndValue.getKey(), businessIdAndValue.getValue());
+            result = this.getService().update(doClass, updateWrapper);
+            if (!result) {
+                return ApiResponse.fail("更新失败！");
+            }
+        } else {
+            this.setBusinessId(doClass);
+            result = this.getService().save(doClass);
+            if (!result) {
+                return ApiResponse.fail("保存失败！");
+            }
         }
         VO dtoClass = JSON.parseObject(JSON.toJSONString(doClass), clazzVO);
         return ApiResponse.success(dtoClass);
@@ -88,6 +106,28 @@ public abstract class BaseController<VO, REQ, DO extends BaseEntity> implements 
         return ApiResponse.success(JSON.parseObject(JSON.toJSONString(doClass), clazzVO));
     }
 
+    @Override
+    public ApiResponse<VO> selectDataDetail(String businessId) {
+        QueryWrapper<DO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(this.getBusinessId(clazzDO), businessId);
+        DO doClass = this.getService().getOne(queryWrapper);
+        return ApiResponse.success(JSON.parseObject(JSON.toJSONString(doClass), clazzVO));
+    }
+
+    @Override
+    public ApiResponse<Boolean> delete(ApiRequest<REQ> req) {
+        REQ reqParam = req.getParam();
+        QueryWrapper<DO> queryWrapper = this.getQueryWrapper(reqParam);
+        return ApiResponse.success(this.getService().remove(queryWrapper));
+    }
+
+    @Override
+    public ApiResponse<Boolean> delete(String businessId) {
+        QueryWrapper<DO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(this.getBusinessId(clazzDO), businessId);
+        return ApiResponse.success(this.getService().remove(queryWrapper));
+    }
+
     /**
      * 组合查询条件
      *
@@ -102,7 +142,11 @@ public abstract class BaseController<VO, REQ, DO extends BaseEntity> implements 
             try {
                 // 设置为可访问
                 field.setAccessible(true);
-                String value = field.get(reqParam).toString();
+                Object obj = field.get(reqParam);
+                if (Objects.isNull(obj)) {
+                    continue;
+                }
+                String value = obj.toString();
                 queryWrapper.eq(StringUtils.isNotBlank(value), StrUtil.toUnderlineCase(field.getName()), value);
             } catch (IllegalAccessException e) {
                 throw new BasicException(BasicRespCode.FAIL.getCode(), "无法访问字段：" + field.getName() + "[" + e.getMessage() + "]");
@@ -152,5 +196,70 @@ public abstract class BaseController<VO, REQ, DO extends BaseEntity> implements 
             currentClass = currentClass.getSuperclass();
         }
         return "id";
+    }
+
+    private String getBusinessId(Class<?> clazz) {
+        // 遍历类及其父类
+        Class<?> currentClass = clazz;
+        while (currentClass != null) {
+            Field[] fields = currentClass.getDeclaredFields();
+            for (Field field : fields) {
+                BusinessId businessId = field.getAnnotation(BusinessId.class);
+                if (businessId != null) {
+                    if (StringUtils.isNotBlank(businessId.value())) {
+                        return businessId.value();
+                    }
+                    return StrUtil.toUnderlineCase(field.getName());
+                }
+            }
+            currentClass = currentClass.getSuperclass();
+        }
+        return "id";
+    }
+
+    private Pair<String, Object> getBusinessIdAndValue(DO clazz) {
+        // 遍历类及其父类
+        Field[] fields = clazz.getClass().getDeclaredFields();
+        String columnName;
+        Object columnValue;
+        for (Field field : fields) {
+            BusinessId businessId = field.getAnnotation(BusinessId.class);
+            if (businessId != null) {
+                columnName = businessId.value();
+                try {
+                    // 设置为可访问
+                    field.setAccessible(true);
+                    columnValue = field.get(clazz);
+                    return Pair.of(StringUtils.isNotBlank(columnName) ? columnName : StrUtil.toUnderlineCase(field.getName()), columnValue);
+                } catch (IllegalAccessException e) {
+                    throw new BasicException(BasicRespCode.FAIL.getCode(), "无法访问字段：" + field.getName() + "[" + e.getMessage() + "]");
+                }
+            }
+        }
+        return null;
+    }
+
+    private void setBusinessId(DO clazz) {
+        // 遍历类及其父类
+        Field[] fields = clazz.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            BusinessId businessId = field.getAnnotation(BusinessId.class);
+            if (businessId != null) {
+                try {
+                    // 设置为可访问
+                    field.setAccessible(true);
+                    if (field.getType().isAssignableFrom(String.class)) {
+                        field.set(clazz, IdUtil.getSnowflakeNextIdStr());
+                    } else if (field.getType().isAssignableFrom(Long.class)) {
+                        field.set(clazz, IdUtil.getSnowflakeNextId());
+                    } else {
+                        field.set(clazz, IdUtil.getSnowflakeNextIdStr());
+                    }
+                    break;
+                } catch (IllegalAccessException e) {
+                    throw new BasicException(BasicRespCode.FAIL.getCode(), "无法访问字段：" + field.getName() + "[" + e.getMessage() + "]");
+                }
+            }
+        }
     }
 }
