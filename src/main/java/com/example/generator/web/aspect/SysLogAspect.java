@@ -1,8 +1,7 @@
 package com.example.generator.web.aspect;
 
 import com.alibaba.fastjson2.JSON;
-import com.example.generator.pojo.dto.UserDTO;
-import com.example.generator.pojo.helper.LoginHelper;
+import com.example.generator.pojo.exception.BasicException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import lombok.SneakyThrows;
@@ -11,7 +10,6 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
-import org.slf4j.MDC;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -19,7 +17,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -77,7 +74,9 @@ public class SysLogAspect {
      */
     @AfterThrowing(value = "pointcutExpression()", throwing = "e")
     public void afterThrowingMethod(JoinPoint joinPoint, Exception e) {
-        log.warn("异常通知, 出现异常 " + e);
+        log.error("异常通知, 出现异常 " + e);
+        e.printStackTrace();
+        throw new BasicException(e.getMessage());
     }
 
     /**
