@@ -1,9 +1,11 @@
 package com.example.generator.pojo.container;
 
+import cn.hutool.core.util.IdUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 
@@ -26,14 +28,19 @@ public class ApiRequest<T> implements Serializable {
 
     public ApiRequest() {
         super();
+        if (StringUtils.isBlank(this.trace)) {
+            this.trace = "TRACE_".concat(IdUtil.fastUUID()).concat("-").concat(String.valueOf(System.currentTimeMillis()));
+        }
     }
 
     public ApiRequest(T param) {
         this.param = param;
+        if (StringUtils.isBlank(this.trace)) {
+            this.trace = "TRACE_".concat(IdUtil.fastUUID()).concat("-").concat(String.valueOf(System.currentTimeMillis()));
+        }
     }
 
     public static <T> ApiRequest<T> create(T param) {
         return new ApiRequest<>(param);
     }
-
 }

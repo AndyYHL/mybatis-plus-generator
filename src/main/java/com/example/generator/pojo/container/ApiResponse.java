@@ -1,9 +1,11 @@
 package com.example.generator.pojo.container;
 
+import cn.hutool.core.util.IdUtil;
 import com.example.generator.pojo.enums.BasicRespCode;
 import com.example.generator.pojo.exception.BasicException;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author xxxx
@@ -21,13 +23,20 @@ public class ApiResponse<T> extends ApiResponseCommon {
 
     public ApiResponse() {
         super();
+        if (StringUtils.isBlank(super.getTrace())) {
+            super.setTrace("TRACE_".concat(IdUtil.fastUUID()).concat("-").concat(String.valueOf(System.currentTimeMillis())));
+        }
     }
 
     public ApiResponse(String trace, String code, String msg, T data) {
         super();
         super.setCode(code);
         super.setMsg(msg);
-        super.setTrace(trace);
+        if (StringUtils.isBlank(trace)) {
+            super.setTrace("TRACE_".concat(IdUtil.fastUUID()).concat("-").concat(String.valueOf(System.currentTimeMillis())));
+        } else {
+            super.setTrace(trace);
+        }
         this.data = data;
     }
 

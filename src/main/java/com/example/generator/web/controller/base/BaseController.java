@@ -77,7 +77,7 @@ public abstract class BaseController<VO, REQ, DO extends BaseEntity> implements 
             }
         }
         VO dtoClass = JSON.parseObject(JSON.toJSONString(doClass), clazzVO);
-        return ApiResponse.success(dtoClass);
+        return ApiResponse.successTrace(req.getTrace(), dtoClass);
     }
 
     @Override
@@ -86,7 +86,7 @@ public abstract class BaseController<VO, REQ, DO extends BaseEntity> implements 
         QueryWrapper<DO> queryWrapper = this.getQueryWrapper(reqParam);
         queryWrapper.orderByDesc(this.getTableIdColumnName(clazzDO));
         List<DO> doClassList = this.getService().list(queryWrapper);
-        return ApiResponse.success(JSON.parseArray(JSON.toJSONString(doClassList), clazzVO));
+        return ApiResponse.successTrace(req.getTrace(), JSON.parseArray(JSON.toJSONString(doClassList), clazzVO));
     }
 
     @Override
@@ -95,7 +95,7 @@ public abstract class BaseController<VO, REQ, DO extends BaseEntity> implements 
         QueryWrapper<DO> queryWrapper = this.getQueryWrapper(reqParam);
         queryWrapper.orderByDesc(this.getTableIdColumnName(clazzDO));
         IPage<DO> doClassList = this.getService().page(new Page<>(req.getCurrentPage(), req.getPageSize()), queryWrapper);
-        return ApiPageResponse.success(doClassList, clazzVO);
+        return ApiPageResponse.successTrace(req.getTrace(), doClassList, clazzVO);
     }
 
     @Override
@@ -103,7 +103,7 @@ public abstract class BaseController<VO, REQ, DO extends BaseEntity> implements 
         REQ reqParam = req.getParam();
         QueryWrapper<DO> queryWrapper = this.getQueryWrapper(reqParam);
         DO doClass = this.getService().getOne(queryWrapper);
-        return ApiResponse.success(JSON.parseObject(JSON.toJSONString(doClass), clazzVO));
+        return ApiResponse.successTrace(req.getTrace(), JSON.parseObject(JSON.toJSONString(doClass), clazzVO));
     }
 
     @Override
@@ -118,7 +118,7 @@ public abstract class BaseController<VO, REQ, DO extends BaseEntity> implements 
     public ApiResponse<Boolean> delete(ApiRequest<REQ> req) {
         REQ reqParam = req.getParam();
         QueryWrapper<DO> queryWrapper = this.getQueryWrapper(reqParam);
-        return ApiResponse.success(this.getService().remove(queryWrapper));
+        return ApiResponse.successTrace(req.getTrace(), this.getService().remove(queryWrapper));
     }
 
     @Override
