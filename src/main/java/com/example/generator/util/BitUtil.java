@@ -4,9 +4,14 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.time.YearMonth;
+import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.StringJoiner;
 
 /**
  * <p>
@@ -124,14 +129,28 @@ public class BitUtil {
     }
 
     public static void main(String[] args) {
+        for (int i = 1; i < 21; i++) {
+            for (int j = 1; j <= i; j++) {
+                System.out.print(i + "*" + j + "=" + (i * j)+" ");
+            }
+            System.out.println();
+        }
         /*UserDTO userDTO = new UserDTO();
         ReflectUtil.invoke(userDTO, "setUserId", "10");
         System.out.println(JSON.toJSONString(userDTO));*/
-        /*StringJoiner joiner = new StringJoiner(",", "(", ")");
+        //(文字:0,文字:1,文字:2,文字:3,文字:4,文字:5,文字:6,文字:7,文字:8,文字:9) 文字拼接
+        List<String> stringList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            joiner.add("文字:" + i);
+            StringJoiner joiner = new StringJoiner(",", "(", ")");
+            for (int k = 0; k < 10; k++) {
+                joiner.add(i + "文字:" + k);
+            }
+            stringList.add(joiner.toString());
         }
-        System.out.println(joiner);*/
+        stringList.forEach(System.out::println);
+
+        String numbers = "P00003".replaceAll("\\D+", "");
+        System.out.println(Long.parseLong(numbers));
         /*Field[] fields = ReflectUtil.getFields(BaseEntityDTO.class);
         Stream<String> ignoreProperties = Arrays.stream(fields).toList().stream().map(Field::getName);
         String [] dd = ignoreProperties.toArray(String[]::new);*/
@@ -153,6 +172,7 @@ public class BitUtil {
         LocalDateTime startOfMonth = startDate.atTime(LocalTime.MIN);
         LocalDateTime endOfMonth = startDate.plusMonths(1).minusDays(1).atTime(LocalTime.MAX);
         System.out.println(startOfMonth.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))+"------"+endOfMonth.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));*/
+        System.out.println(String.format("P%05d", 899999));
         System.out.println("周数:" + getWeeksSpanningMonth(2025, 2));
 
         LocalDate currentDate = LocalDate.now(); // 可替换为任意指定日期
@@ -166,8 +186,17 @@ public class BitUtil {
 
         System.out.println("第" + week + "周开始时间: " + pair.getKey());
         System.out.println("第" + week + "周结束时间: " + pair.getValue());
+        int weeksNum = getWeeksBetween(pair.getLeft(), pair.getRight());
+        System.out.println("时间段周数: " + weeksNum);
     }
 
+    /**
+     * 根据年月获取全年有多少周
+     *
+     * @param year
+     * @param month
+     * @return
+     */
     public static int getWeeksSpanningMonth(int year, int month) {
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDate firstDay = yearMonth.atDay(1);
@@ -188,6 +217,12 @@ public class BitUtil {
         }
     }
 
+    /**
+     * 当前日期所在年的周数
+     *
+     * @param date
+     * @return
+     */
     public static int getWeekOfYear(LocalDate date) {
         // 使用默认地区的周计算规则
         return date.get(WeekFields.of(Locale.getDefault()).weekOfYear());
@@ -211,5 +246,36 @@ public class BitUtil {
         // 获取该周的最后一天（周日）
         LocalDate endDate = startDate.with(weekFields.dayOfWeek(), 7);
         return Pair.of(startDate, endDate);
+    }
+
+    /**
+     * 计算指定时间范围内包含的周数
+     *
+     * @param startDate 开始日期
+     * @param endDate   结束日期
+     * @return 周数
+     */
+    public static int getWeeksBetween(LocalDate startDate, LocalDate endDate) {
+        // 使用ISO标准周定义（周一为一周开始）
+        WeekFields weekFields = WeekFields.ISO;
+
+        // 获取开始日期和结束日期所在的周数
+        int startWeek = startDate.get(weekFields.weekOfYear());
+        int endWeek = endDate.get(weekFields.weekOfYear());
+
+        // 获取年份信息处理跨年情况
+        int startYear = startDate.get(weekFields.weekBasedYear());
+        int endYear = endDate.get(weekFields.weekBasedYear());
+
+        // 计算周数差异
+        if (startYear == endYear) {
+            return endWeek - startWeek + 1;
+        } else {
+            // 跨年情况，需要考虑每年的总周数
+            // 获取起始年份的总周数
+            int weeksInStartYear = Year.of(startYear).atDay(1).with(TemporalAdjusters.lastDayOfYear())
+                    .get(weekFields.weekOfYear());
+            return (weeksInStartYear - startWeek + 1) + endWeek + (endYear - startYear - 1) * 52;
+        }
     }
 }
