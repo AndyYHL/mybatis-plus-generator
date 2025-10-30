@@ -148,7 +148,7 @@ public class BitUtil {
             stringList.add(joiner.toString());
         }
         stringList.forEach(System.out::println);
-
+        // 记录
         String numbers = "P00003".replaceAll("\\D+", "");
         System.out.println(Long.parseLong(numbers));
         /*Field[] fields = ReflectUtil.getFields(BaseEntityDTO.class);
