@@ -131,7 +131,7 @@ public class BitUtil {
     public static void main(String[] args) {
         for (int i = 1; i < 21; i++) {
             for (int j = 1; j <= i; j++) {
-                System.out.print(i + "*" + j + "=" + (i * j)+" ");
+                System.out.print(i + "*" + j + "=" + (i * j) + " ");
             }
             System.out.println();
         }
@@ -141,9 +141,9 @@ public class BitUtil {
         //(文字:0,文字:1,文字:2,文字:3,文字:4,文字:5,文字:6,文字:7,文字:8,文字:9) 文字拼接
         List<String> stringList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            StringJoiner joiner = new StringJoiner(",", "(", ")");
+            StringJoiner joiner = new StringJoiner(",", "{", "}");
             for (int k = 0; k < 10; k++) {
-                joiner.add(i + "文字:" + k);
+                joiner.add("\"" + k + "文字\":\"" + i + "\"");
             }
             stringList.add(joiner.toString());
         }
